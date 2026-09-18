@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classes</title>
+  <link rel="icon" id="tab-favicon" href="https://ssl.gstatic.com/classroom/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #070913; color: #f1f5f9; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    
+    .bg-glow {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: 
+        radial-gradient(circle at 15% 20%, rgba(124, 111, 252, 0.15), transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(34, 211, 238, 0.12), transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8), #070913);
+    }
+
+    #app {
+      position: relative; z-index: 10; display: flex; flex-direction: column; width: 100vw; height: 100vh;
+    }
+
+    #nav {
+      display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 16px;
+      background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08); flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 15px;
+      letter-spacing: -0.5px; background: linear-gradient(135deg, #a78bfa, #22d3ee);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-right: 8px;
+      cursor: pointer; user-select: none;
+    }
+    .brand span { font-size: 18px; -webkit-text-fill-color: initial; }
+
+    .nav-btn {
+      display: flex; align-items: center; justify-content: center; width: 32px; height: 32px;
+      border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(255, 255, 255, 0.04);
+      color: #94a3b8; cursor: pointer; transition: all 0.15s; font-size: 13px;
+    }
+    .nav-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); color: #fff; border-color: rgba(255, 255, 255, 0.2); }
+    .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .omnibox {
+      flex: 1; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px;
+      border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(2, 6, 23, 0.6); transition: all 0.2s;
+    }
+    .omnibox:focus-within {
+      border-color: #818cf8; box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+      background: rgba(2, 6, 23, 0.85);
+    }
+    .omnibox input {
+      flex: 1; background: none; border: none; outline: none; color: #f8fafc; font-size: 13px;
+      font-family: inherit;
+    }
+    .omnibox input::placeholder { color: #64748b; }
+
+    .engine-select {
+      background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1; border-radius: 8px; height: 32px; padding: 0 8px; font-size: 12px;
+      outline: none; cursor: pointer;
+    }
+    .engine-select option { background: #0f172a; color: #fff; }
+
+    .btn-pill {
+      display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px;
+      border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s;
+      border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: #cbd5e1;
+    }
+    .btn-pill:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+    .btn-pill.cyan { background: rgba(34, 211, 238, 0.12); border-color: rgba(34, 211, 238, 0.3); color: #22d3ee; }
+    .btn-pill.cyan:hover { background: rgba(34, 211, 238, 0.22); }
+    .btn-panic { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #f87171; }
+    .btn-panic:hover { background: rgba(239, 68, 68, 0.25); color: #fff; }
+
+    #view {
+      position: relative; flex: 1; width: 100%; height: calc(100vh - 52px); overflow: hidden;
+    }
+
+    #home-screen {
+      position: absolute; inset: 0; z-index: 20; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 24px; overflow-y: auto;
+    }
+    #home-screen.hide { display: none; }
+
+    .hero-title {
+      font-size: 44px; font-weight: 900; letter-spacing: -1.5px;
+      background: linear-gradient(135deg, #ffffff 30%, #a78bfa 70%, #22d3ee 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 8px; text-align: center;
+    }
+    .hero-sub {
+      font-size: 13.5px; color: #94a3b8; margin-bottom: 28px; text-align: center;
+      letter-spacing: 0.5px;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
+      background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.25);
+      border-radius: 20px; color: #38bdf8; font-size: 11px; font-weight: 700; margin-bottom: 18px;
+      letter-spacing: 0.5px; text-transform: uppercase;
+    }
+
+    .search-box {
+      width: 100%; max-width: 620px; display: flex; gap: 10px; margin-bottom: 30px;
+    }
+    .search-box input {
+      flex: 1; height: 48px; padding: 0 18px; border-radius: 14px;
+      background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #fff; font-size: 15px; outline: none; font-family: inherit;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); transition: all 0.2s;
+    }
+    .search-box input:focus {
+      border-color: #818cf8; box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.25);
+      background: rgba(15, 23, 42, 0.95);
+    }
+    .search-box button {
+      padding: 0 24px; border-radius: 14px; border: none; font-weight: 700; font-size: 14px;
+      background: linear-gradient(135deg, #7c6ffc, #22d3ee); color: #fff; cursor: pointer;
+      box-shadow: 0 8px 20px -4px rgba(124, 111, 252, 0.4); transition: transform 0.15s;
+    }
+    .search-box button:hover { transform: translateY(-1px); }
+
+    .grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px; width: 100%; max-width: 760px;
+    }
+    .card {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 16px 12px; border-radius: 14px; background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08); cursor: pointer; transition: all 0.2s;
+      text-align: center; gap: 8px; text-decoration: none;
+    }
+    .card:hover {
+      transform: translateY(-3px); background: rgba(30, 41, 59, 0.7);
+      border-color: rgba(255, 255, 255, 0.2); box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.4);
+    }
+    .card-icon { font-size: 26px; }
+    .card-name { font-size: 12.5px; font-weight: 600; color: #f1f5f9; }
+    .card-desc { font-size: 10px; color: #64748b; }
+
+    #webview {
+      position: absolute; inset: 0; width: 100%; height: 100%; border: none;
+      background: #fff; display: none; z-index: 10;
+    }
+    #webview.active { display: block; }
+
+    #loader {
+      position: absolute; inset: 0; z-index: 30; display: none; flex-direction: column;
+      align-items: center; justify-content: center; background: rgba(7, 9, 19, 0.85);
+      backdrop-filter: blur(8px);
+    }
+    #loader.active { display: flex; }
+    .spinner {
+      width: 44px; height: 44px; border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #22d3ee; border-right-color: #a78bfa; border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-text { font-size: 13.5px; font-weight: 600; color: #e2e8f0; }
+    .loader-url { font-size: 11.5px; color: #64748b; margin-top: 6px; font-family: monospace; max-width: 80%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    #toast {
+      position: fixed; bottom: 20px; right: 20px; z-index: 100;
+      padding: 10px 18px; border-radius: 10px; font-size: 12.5px; font-weight: 600;
+      background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); transform: translateY(100px);
+      opacity: 0; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="bg-glow"></div>
+  
+  <div style="display:none" aria-hidden="true">
+    <h3>Advanced Placement Curriculum &amp; Study Sheets</h3>
+    <p>Mathematics, Calculus, and Historical Primary Sources for accredited secondary education.</p>
+  </div>
+
+  <div id="app">
+    <nav id="nav">
+      <div class="brand" id="btn-home" title="Go Home">
+        <span>⚡</span> NexProxy CDN
+      </div>
+
+      <button class="nav-btn" id="btn-back" title="Back" disabled>←</button>
+      <button class="nav-btn" id="btn-fwd" title="Forward" disabled>→</button>
+      <button class="nav-btn" id="btn-reload" title="Reload">↻</button>
+
+      <select class="engine-select" id="proxy-engine" title="Select Proxy Engine">
+        <option value="cors-auto" selected>🌐 Multi-CORS Proxy (Auto)</option>
+        <option value="cors-allorigins">⚡ AllOrigins Gateway</option>
+        <option value="cors-codetabs">🚀 CodeTabs Gateway</option>
+        <option value="direct">🔗 Direct Embed (No Proxy)</option>
+      </select>
+
+      <div class="omnibox">
+        <span style="font-size: 13px; color: #22d3ee">🔒</span>
+        <input type="text" id="url-input" placeholder="Search Google or enter a website URL (e.g. discord.com)…" autocomplete="off" spellcheck="false">
+        <button class="nav-btn" id="btn-go" style="width: 26px; height: 26px; font-size: 11px">↵</button>
+      </div>
+
+      <button class="btn-pill cyan" id="btn-cloak" title="Open inside about:blank (hides from history)">
+        🕶️ Cloak Tab
+      </button>
+
+      <select class="engine-select" id="disguise-select" title="Tab Disguise">
+        <option value="classroom">🎓 Google Classroom</option>
+        <option value="drive">📁 Google Drive</option>
+        <option value="docs">📄 Google Docs</option>
+        <option value="canvas">🎨 Canvas LMS</option>
+        <option value="khan">📚 Khan Academy</option>
+      </select>
+
+      <button class="btn-pill btn-panic" id="btn-panic" title="Emergency Panic (Press ~)">
+        🚨 Panic [~]
+      </button>
+    </nav>
+
+    <main id="view">
+      <div id="home-screen">
+        <div class="hero-badge">⚡ HOSTED ON JSDELIVR CDN · 100% UNBLOCKABLE</div>
+        <h1 class="hero-title">Browse The Web Unrestricted</h1>
+        <p class="hero-sub">Fast · Educational Whitelisted CDN · Zero Logs · Cloaked</p>
+
+        <div class="search-box">
+          <input type="text" id="hero-input" placeholder="Search Google or enter website URL…" autocomplete="off" spellcheck="false">
+          <button id="hero-go">Launch →</button>
+        </div>
+
+        <div class="grid">
+          <div class="card" data-url="https://www.google.com">
+            <div class="card-icon">🔍</div>
+            <div class="card-name">Google Search</div>
+            <div class="card-desc">Web Search</div>
+          </div>
+
+          <div class="card" data-url="https://discord.com/app">
+            <div class="card-icon">💬</div>
+            <div class="card-name">Discord</div>
+            <div class="card-desc">Chat &amp; Voice</div>
+          </div>
+
+          <div class="card" data-url="https://redlib.privacyredirect.com">
+            <div class="card-icon">🅡</div>
+            <div class="card-name">Reddit</div>
+            <div class="card-desc">Redlib Unblocked</div>
+          </div>
+
+          <div class="card" data-url="https://nitter.poast.org">
+            <div class="card-icon">𝕏</div>
+            <div class="card-name">Twitter / X</div>
+            <div class="card-desc">Nitter Mirror</div>
+          </div>
+
+          <div class="card" data-url="https://freefy.app">
+            <div class="card-icon">🎵</div>
+            <div class="card-name">Freefy Music</div>
+            <div class="card-desc">Spotify Alternative</div>
+          </div>
+
+          <div class="card" data-url="https://in.brucehickey.com">
+            <div class="card-icon">🎬</div>
+            <div class="card-name">BruceHickey</div>
+            <div class="card-desc">Free Movies</div>
+          </div>
+
+          <div class="card" data-url="https://classic.minecraft.net">
+            <div class="card-icon">⛏️</div>
+            <div class="card-name">Minecraft</div>
+            <div class="card-desc">Classic In-Browser</div>
+          </div>
+
+          <div class="card" data-url="https://www.coolmathgames.com">
+            <div class="card-icon">➕</div>
+            <div class="card-name">Coolmath</div>
+            <div class="card-desc">Games Library</div>
+          </div>
+
+          <div class="card" data-url="https://en.wikipedia.org">
+            <div class="card-icon">📖</div>
+            <div class="card-name">Wikipedia</div>
+            <div class="card-desc">Encyclopedia</div>
+          </div>
+
+          <div class="card" data-url="https://github.com">
+            <div class="card-icon">🐙</div>
+            <div class="card-name">GitHub</div>
+            <div class="card-desc">Code &amp; Repos</div>
+          </div>
+        </div>
+      </div>
+
+      <iframe id="webview" allow="fullscreen; autoplay; clipboard-write; encrypted-media; camera; microphone"></iframe>
+
+      <div id="loader">
+        <div class="spinner"></div>
+        <div class="loader-text" id="loader-msg">Fetching through CDN Gateway…</div>
+        <div class="loader-url" id="loader-url"></div>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    (function() {
+      var currentUrl = '';
+      var historyStack = [];
+      var historyIndex = -1;
+
+      var webview = document.getElementById('webview');
+      var homeScreen = document.getElementById('home-screen');
+      var loader = document.getElementById('loader');
+      var loaderMsg = document.getElementById('loader-msg');
+      var loaderUrl = document.getElementById('loader-url');
+      var urlInput = document.getElementById('url-input');
+      var heroInput = document.getElementById('hero-input');
+      var engineSelect = document.getElementById('proxy-engine');
+      var toastEl = document.getElementById('toast');
+
+      var btnBack = document.getElementById('btn-back');
+      var btnFwd = document.getElementById('btn-fwd');
+      var btnReload = document.getElementById('btn-reload');
+      var btnGo = document.getElementById('btn-go');
+      var btnHome = document.getElementById('btn-home');
+      var btnCloak = document.getElementById('btn-cloak');
+      var btnPanic = document.getElementById('btn-panic');
+      var disguiseSelect = document.getElementById('disguise-select');
+
+      function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        setTimeout(function() { toastEl.classList.remove('show'); }, 3000);
+      }
+
+      function updateNavButtons() {
+        btnBack.disabled = (historyIndex <= 0);
+        btnFwd.disabled = (historyIndex >= historyStack.length - 1);
+      }
+
+      function normalizeUrl(input) {
+        input = input.trim();
+        if (!input) return '';
+        if (/^https?:\/\//i.test(input)) return input;
+        if (input.indexOf('.') !== -1 && input.indexOf(' ') === -1) {
+          return 'https://' + input;
+        }
+        return 'https://www.google.com/search?q=' + encodeURIComponent(input);
+      }
+
+      function showLoader(msg, url) {
+        loaderMsg.textContent = msg || 'Connecting through proxy…';
+        loaderUrl.textContent = url || '';
+        loader.classList.add('active');
+      }
+
+      function hideLoader() {
+        loader.classList.remove('active');
+      }
+
+      var PROXY_GATEWAYS = [
+        function(u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
+        function(u) { return 'https://corsproxy.io/?' + encodeURIComponent(u); },
+        function(u) { return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u); },
+        function(u) { return 'https://thingproxy.freeboard.io/fetch/' + encodeURIComponent(u); }
+      ];
+
+      function navigate(rawUrl, skipHistory) {
+        var target = normalizeUrl(rawUrl);
+        if (!target) return;
+
+        currentUrl = target;
+        urlInput.value = target;
+
+        if (!skipHistory) {
+          historyStack = historyStack.slice(0, historyIndex + 1);
+          historyStack.push(target);
+          historyIndex = historyStack.length - 1;
+          updateNavButtons();
+        }
+
+        homeScreen.classList.add('hide');
+        webview.classList.add('active');
+
+        var engine = engineSelect.value;
+
+        if (engine === 'direct') {
+          showLoader('Connecting directly…', target);
+          webview.onload = function() { hideLoader(); showToast('Loaded direct embed'); };
+          webview.onerror = function() { hideLoader(); showToast('Direct embed blocked - switch engine'); };
+          webview.src = target;
+          return;
+        }
+
+        showLoader('Connecting through CDN Multi-Proxy…', target);
+        fetchProxiedHtml(target, 0);
+      }
+
+      function fetchProxiedHtml(url, gatewayIndex) {
+        if (gatewayIndex >= PROXY_GATEWAYS.length) {
+          showLoader('Attempting direct fallback…', url);
+          webview.onload = function() { hideLoader(); showToast('Loaded direct fallback'); };
+          webview.onerror = function() { hideLoader(); showToast('Failed to load website'); };
+          webview.src = url;
+          return;
+        }
+
+        var proxyUrl = PROXY_GATEWAYS[gatewayIndex](url);
+        var timeoutSignal = window.AbortSignal && window.AbortSignal.timeout ? window.AbortSignal.timeout(7000) : null;
+
+        fetch(proxyUrl, { signal: timeoutSignal })
+          .then(function(res) {
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.text();
+          })
+          .then(function(html) {
+            hideLoader();
+
+            var origin = (url.match(/^(https?:\/\/[^\/]+)/i) || ['', url])[1];
+            var baseHref = url.replace(/([^/])\/?$/, '$1/');
+            var baseTag = '<base href="' + baseHref + '">';
+
+            if (/<head(\s[^>]*)?>/i.test(html)) {
+              html = html.replace(/<head(\s[^>]*)?>/i, '$&\n' + baseTag);
+            } else {
+              html = baseTag + '\n' + html;
+            }
+
+            var interceptScript = '<script>'
+              + 'document.addEventListener("click", function(e) {'
+              + '  var a = e.target.closest("a");'
+              + '  if (a && a.href) {'
+              + '    e.preventDefault();'
+              + '    window.parent.postMessage({ type: "NXP_NAV", url: a.href }, "*");'
+              + '  }'
+              + '}, true);'
+              + 'document.addEventListener("submit", function(e) {'
+              + '  var f = e.target;'
+              + '  if (f && f.action) {'
+              + '    e.preventDefault();'
+              + '    var data = new FormData(f);'
+              + '    var params = new URLSearchParams(data).toString();'
+              + '    var full = f.action + (f.action.indexOf("?") === -1 ? "?" : "&") + params;'
+              + '    window.parent.postMessage({ type: "NXP_NAV", url: full }, "*");'
+              + '  }'
+              + '}, true);'
+              + '<\/script>';
+
+            html = html.replace(/<\/body>/i, interceptScript + '</body>');
+
+            webview.removeAttribute('src');
+            webview.srcdoc = html;
+            showToast('⚡ Loaded via Gateway #' + (gatewayIndex + 1));
+          })
+          .catch(function(err) {
+            fetchProxiedHtml(url, gatewayIndex + 1);
+          });
+      }
+
+      window.addEventListener('message', function(e) {
+        if (e.data && e.data.type === 'NXP_NAV' && e.data.url) {
+          navigate(e.data.url);
+        }
+      });
+
+      btnGo.addEventListener('click', function() { navigate(urlInput.value); });
+      urlInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') navigate(this.value); });
+      var heroGo = document.getElementById('hero-go');
+      heroGo.addEventListener('click', function() { navigate(heroInput.value); });
+      heroInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') navigate(this.value); });
+
+      btnHome.addEventListener('click', function() {
+        homeScreen.classList.remove('hide');
+        webview.classList.remove('active');
+        hideLoader();
+        urlInput.value = '';
+      });
+
+      btnBack.addEventListener('click', function() {
+        if (historyIndex > 0) {
+          historyIndex--;
+          navigate(historyStack[historyIndex], true);
+          updateNavButtons();
+        }
+      });
+
+      btnFwd.addEventListener('click', function() {
+        if (historyIndex < historyStack.length - 1) {
+          historyIndex++;
+          navigate(historyStack[historyIndex], true);
+          updateNavButtons();
+        }
+      });
+
+      btnReload.addEventListener('click', function() {
+        if (currentUrl) navigate(currentUrl, true);
+      });
+
+      document.querySelectorAll('.card').forEach(function(card) {
+        card.addEventListener('click', function() {
+          var url = this.getAttribute('data-url');
+          if (url) navigate(url);
+        });
+      });
+
+      function panic() {
+        window.location.replace('https://classroom.google.com');
+      }
+      btnPanic.addEventListener('click', panic);
+      window.addEventListener('keydown', function(e) {
+        if (e.key === '`' || e.key === '~') panic();
+      });
+
+      btnCloak.addEventListener('click', function() {
+        var win = window.open('about:blank', '_blank');
+        if (!win) {
+          showToast('Pop-up blocked! Allow popups to use cloaking.');
+          return;
+        }
+        var doc = win.document;
+        doc.title = document.title;
+        var fav = doc.createElement('link');
+        fav.rel = 'icon';
+        fav.href = document.getElementById('tab-favicon').href;
+        doc.head.appendChild(fav);
+
+        var iframe = doc.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.inset = '0';
+        iframe.style.width = '100vw';
+        iframe.style.height = '100vh';
+        iframe.style.border = 'none';
+        iframe.setAttribute('allow', 'fullscreen; autoplay; clipboard-write; encrypted-media; camera; microphone');
+        iframe.src = window.location.href;
+
+        doc.body.style.margin = '0';
+        doc.body.style.overflow = 'hidden';
+        doc.body.appendChild(iframe);
+
+        win.addEventListener('keydown', function(e) {
+          if (e.key === '`' || e.key === '~') {
+            win.location.replace('https://classroom.google.com');
+          }
+        });
+
+        showToast('🕶️ Opened in about:blank cloaked tab!');
+      });
+
+      var DISGUISES = {
+        classroom: { title: 'Classes', icon: 'https://ssl.gstatic.com/classroom/favicon.png' },
+        drive: { title: 'My Drive - Google Drive', icon: 'https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png' },
+        docs: { title: 'Google Docs', icon: 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico' },
+        canvas: { title: 'Dashboard', icon: 'https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico' },
+        khan: { title: 'Dashboard | Khan Academy', icon: 'https://www.khanacademy.org/favicon.ico' }
+      };
+
+      disguiseSelect.addEventListener('change', function() {
+        var d = DISGUISES[this.value];
+        if (d) {
+          document.title = d.title;
+          document.getElementById('tab-favicon').href = d.icon;
+          showToast('🎭 Disguised as ' + d.title);
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>

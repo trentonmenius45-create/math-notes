@@ -1,617 +1,1507 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-  <foreignObject width="100%" height="100%">
+﻿<svg xmlns="http://www.w3.org/2000/svg" id="svgroot" width="100%" height="100%">
+<script type="text/javascript">//<![CDATA[
+(function(){
+  var s = document.getElementById('svgroot') || document.documentElement;
+  function fit(){
+    s.setAttribute('width',  window.innerWidth  + 'px');
+    s.setAttribute('height', window.innerHeight + 'px');
+  }
+  fit();
+  window.addEventListener('resize', fit);
+})();
+//]]></script>
+  <foreignObject x="0" y="0" width="100%" height="100%">
     <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-      <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Classes</title>
-        <link rel="icon" id="tab-favicon" href="https://ssl.gstatic.com/classroom/favicon.png" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet" />
-        <script>
-          //<![CDATA[
-          (function(){
-            const XHTML_NS = "http://www.w3.org/1999/xhtml";
-            const root = document.querySelector("foreignObject").firstElementChild;
-            const originalCreateElement = document.createElement.bind(document);
-            const originalCreateElementNS = document.createElementNS.bind(document);
-            Object.defineProperty(document, "head", { get(){ return root.querySelector("head"); }, configurable: true });
-            Object.defineProperty(document, "body", { get(){ return root.querySelector("body"); }, configurable: true });
-            Object.defineProperty(document, "documentElement", { get(){ return root; }, configurable: true });
-            document.createElement = function(tagName, options) {
-              if (typeof tagName === "string") return originalCreateElementNS(XHTML_NS, tagName, options);
-              return originalCreateElement(tagName, options);
-            };
-            document.createElementNS = function(namespaceURI, qualifiedName, options) {
-              if (namespaceURI == null || namespaceURI === XHTML_NS) return originalCreateElementNS(XHTML_NS, qualifiedName, options);
-              return originalCreateElementNS(namespaceURI, qualifiedName, options);
-            };
-          })();
-          //]]>
-        </script>
-        <style>
-          <![CDATA[
-          foreignObject { overflow: visible; width: 100vw; height: 100vh; }
-          *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-          html, body { width: 100%; height: 100%; overflow: hidden; background: #070913; color: #f1f5f9; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
-          
-          /* Background glow */
-          .bg-glow {
-            position: fixed; inset: 0; pointer-events: none; z-index: 0;
-            background: 
-              radial-gradient(circle at 15% 20%, rgba(124, 111, 252, 0.15), transparent 45%),
-              radial-gradient(circle at 85% 80%, rgba(34, 211, 238, 0.12), transparent 40%),
-              radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.8), #070913);
-          }
 
-          /* Main App Container */
-          #app {
-            position: relative; z-index: 10; display: flex; flex-direction: column; width: 100vw; height: 100vh;
-          }
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NexProxy</title>
+<link id="favicon" rel="icon" href="https://ssl.gstatic.com/classroom/favicon.png" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+body{font-family:'Inter',sans-serif;color:#fff;display:flex;position:relative;background:#05060d}
+button{font-family:'Inter',sans-serif;cursor:pointer;border:none;outline:none;background:none}
+input,select{font-family:'Inter',sans-serif;outline:none;border:none;background:none}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(124,111,252,.3);border-radius:4px}
 
-          /* Top Navigation Bar */
-          #nav {
-            display: flex; align-items: center; gap: 10px; height: 52px; padding: 0 16px;
-            background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08); flex-shrink: 0;
-          }
+/* ─ BG ─ */
+#bg{position:fixed;inset:0;z-index:0;
+  background:url('https://images.unsplash.com/photo-1559827291-72ee739d0d9a?w=1920&q=80') center/cover no-repeat;
+  filter:brightness(.4) saturate(1.3) contrast(1.05)}
+#bg-grad{position:fixed;inset:0;z-index:1;
+  background:linear-gradient(180deg,rgba(5,6,13,.65) 0%,transparent 35%,rgba(5,6,13,.45) 100%)}
+#rain{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.5}
 
-          .brand {
-            display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 15px;
-            letter-spacing: -0.5px; background: linear-gradient(135deg, #a78bfa, #22d3ee);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-right: 8px;
-            cursor: pointer; user-select: none;
-          }
-          .brand span { font-size: 18px; -webkit-text-fill-color: initial; }
+/* ─ LAYOUT ─ */
+#sidebar{
+  position:relative;z-index:20;width:56px;flex-shrink:0;
+  background:rgba(4,5,12,.92);backdrop-filter:blur(24px);
+  border-right:1px solid rgba(255,255,255,.06);
+  display:flex;flex-direction:column;align-items:center;
+  padding:12px 0 14px;gap:3px}
+#wrap{position:relative;z-index:10;flex:1;display:flex;flex-direction:column;overflow:hidden}
 
-          .nav-btn {
-            display: flex; align-items: center; justify-content: center; width: 32px; height: 32px;
-            border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(255, 255, 255, 0.04);
-            color: #94a3b8; cursor: pointer; transition: all 0.15s; font-size: 13px;
-          }
-          .nav-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.1); color: #fff; border-color: rgba(255, 255, 255, 0.2); }
-          .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+/* ─ SIDEBAR ─ */
+.lm{width:36px;height:36px;margin-bottom:10px;flex-shrink:0;
+  background:linear-gradient(135deg,#7c6ffc,#c084fc);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  box-shadow:0 4px 18px rgba(124,111,252,.45)}
+.nav{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:17px;color:rgba(255,255,255,.3);cursor:pointer;position:relative;transition:background .15s,color .15s}
+.nav:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.7)}
+.nav.on{background:rgba(124,111,252,.2);color:#c084fc}
+.nav.on::before{content:'';position:absolute;left:-1px;top:50%;transform:translateY(-50%);
+  width:3px;height:20px;background:linear-gradient(#7c6ffc,#c084fc);border-radius:0 3px 3px 0}
+.tip{position:absolute;left:calc(100% + 10px);background:rgba(8,9,20,.95);
+  border:1px solid rgba(255,255,255,.08);border-radius:7px;padding:5px 10px;
+  font-size:11.5px;font-weight:500;color:#ddd;white-space:nowrap;pointer-events:none;
+  opacity:0;transition:opacity .14s;z-index:99}
+.nav:hover .tip,.s-tool:hover .tip{opacity:1}
+.sp{flex:1}
+.s-tool{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:rgba(255,255,255,.3);position:relative;transition:all .15s}
+.s-tool:hover{background:rgba(255,255,255,.08);color:#fff}
 
-          /* URL Bar */
-          .omnibox {
-            flex: 1; display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px;
-            border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.12);
-            background: rgba(2, 6, 23, 0.6); transition: all 0.2s;
-          }
-          .omnibox:focus-within {
-            border-color: #818cf8; box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
-            background: rgba(2, 6, 23, 0.85);
-          }
-          .omnibox input {
-            flex: 1; background: none; border: none; outline: none; color: #f8fafc; font-size: 13px;
-            font-family: inherit;
-          }
-          .omnibox input::placeholder { color: #64748b; }
+/* ─ TOPBAR ─ */
+#topbar{height:46px;background:rgba(5,6,14,.88);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.06);display:none;align-items:center;
+  padding:0 14px;gap:8px;flex-shrink:0}
+.nbtn{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;color:rgba(255,255,255,.5);font-size:13px;transition:all .14s}
+.nbtn:hover:not(:disabled){background:rgba(255,255,255,.08);color:#fff}
+.nbtn:disabled{opacity:.25;cursor:default}
+#engine-select{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;
+  color:#a78bfa;font-size:11px;font-weight:600;padding:4px 8px;cursor:pointer}
+#engine-select option{background:#0b0d18;color:#fff}
+#urlbox{flex:1;max-width:680px;height:30px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.09);border-radius:20px;
+  display:flex;align-items:center;padding:0 12px;gap:8px;transition:border-color .15s}
+#urlbox:focus-within{border-color:rgba(124,111,252,.5);background:rgba(255,255,255,.07)}
+#urlinput{flex:1;color:#fff;font-size:12.5px}
+#urlinput::placeholder{color:rgba(255,255,255,.25)}
+#gobtn{height:30px;padding:0 14px;background:linear-gradient(135deg,#7c6ffc,#c084fc);
+  border-radius:20px;color:#fff;font-size:12px;font-weight:600;transition:opacity .15s}
+#gobtn:hover{opacity:.9}
 
-          /* Engine selector */
-          .engine-select {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #cbd5e1; border-radius: 8px; height: 32px; padding: 0 8px; font-size: 12px;
-            outline: none; cursor: pointer;
-          }
-          .engine-select option { background: #0f172a; color: #fff; }
+/* ─ PANELS ─ */
+.panel{display:none !important;flex:1;overflow:hidden;position:relative}
+.panel.on{display:flex !important;flex-direction:column}
 
-          /* Disguise & Tools */
-          .btn-pill {
-            display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px;
-            border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s;
-            border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); color: #cbd5e1;
-          }
-          .btn-pill:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
-          .btn-pill.cyan { background: rgba(34, 211, 238, 0.12); border-color: rgba(34, 211, 238, 0.3); color: #22d3ee; }
-          .btn-pill.cyan:hover { background: rgba(34, 211, 238, 0.22); }
-          .btn-panic { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #f87171; }
-          .btn-panic:hover { background: rgba(239, 68, 68, 0.25); color: #fff; }
+/* ─ HOME ─ */
+#home{align-items:center;justify-content:center;gap:26px;padding:24px}
+#ht{font-size:46px;font-weight:900;letter-spacing:-1.5px;
+  background:linear-gradient(135deg,#fff 30%,#a78bfa 70%,#c084fc 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}
+#hs{color:rgba(255,255,255,.35);font-size:13.5px;letter-spacing:.4px;text-align:center}
+#hbar{width:100%;max-width:560px;height:48px;background:rgba(10,11,24,.85);
+  backdrop-filter:blur(24px);border:1px solid rgba(124,111,252,.25);border-radius:24px;
+  display:flex;align-items:center;padding:0 8px 0 18px;gap:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,.45),0 0 24px rgba(124,111,252,.15);
+  transition:border-color .2s,box-shadow .2s}
+#hbar:focus-within{border-color:rgba(124,111,252,.55);box-shadow:0 8px 36px rgba(0,0,0,.5),0 0 32px rgba(124,111,252,.25)}
+#hinput{flex:1;color:#fff;font-size:14px}
+#hinput::placeholder{color:rgba(255,255,255,.28)}
+#hgo{height:36px;padding:0 18px;background:linear-gradient(135deg,#7c6ffc,#c084fc);
+  border-radius:18px;color:#fff;font-size:13px;font-weight:600;transition:opacity .15s}
+#hgo:hover{opacity:.9}
+.chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:600px}
+.chip{padding:7px 16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;font-size:12.5px;color:rgba(255,255,255,.6);cursor:pointer;
+  display:flex;align-items:center;gap:6px;transition:all .15s}
+.chip:hover{background:rgba(124,111,252,.15);border-color:rgba(124,111,252,.35);color:#c084fc;transform:translateY(-1px)}
 
-          /* Content Area */
-          #view {
-            position: relative; flex: 1; width: 100%; height: calc(100vh - 52px); overflow: hidden;
-          }
+/* ─ GAMES (Native Grid) ─ */
+#games{overflow:hidden}
+#ghd{height:46px;padding:0 16px;background:rgba(5,6,14,.7);border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;gap:12px;flex-shrink:0}
+.gsbox{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;padding:4px 12px;width:240px}
+.gsbox input{color:#fff;font-size:12px;width:100%}
+.gsbox input::placeholder{color:rgba(255,255,255,.25)}
+#gbody{flex:1;overflow-y:auto;padding:16px}
+#ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:14px}
+.gc{background:rgba(15,16,28,.8);border:1px solid rgba(255,255,255,.07);border-radius:14px;
+  overflow:hidden;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s;
+  display:flex;flex-direction:column;position:relative}
+.gc:hover{transform:translateY(-4px);border-color:rgba(124,111,252,.45);
+  box-shadow:0 10px 24px rgba(0,0,0,.5),0 0 16px rgba(124,111,252,.2)}
+.gct{width:100%;aspect-ratio:1;background:rgba(0,0,0,.4);position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center}
+.gct img{width:100%;height:100%;object-fit:cover;transition:transform .25s}
+.gc:hover .gct img{transform:scale(1.06)}
+.gplay{position:absolute;inset:0;background:rgba(0,0,0,.45);opacity:0;
+  display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;transition:opacity .18s}
+.gc:hover .gplay{opacity:1}
+.gci{padding:8px 10px;background:rgba(10,11,22,.9)}
+.gcn{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-          /* Home Screen */
-          #home-screen {
-            position: absolute; inset: 0; z-index: 20; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; padding: 24px; overflow-y: auto;
-          }
-          #home-screen.hide { display: none; }
+/* ─ GAME VIEWER (Pure Game Modal) ─ */
+#gv{position:fixed;inset:0;z-index:900;background:#000;display:none;flex-direction:column}
+#gvbar{height:40px;background:rgba(10,11,22,.95);border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;padding:0 12px;gap:8px}
+#gvtit{font-size:13px;font-weight:700;color:#c084fc;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gvbtn{padding:4px 12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;color:#fff;font-size:11px;font-weight:600;cursor:pointer;transition:all .14s}
+.gvbtn:hover{background:rgba(124,111,252,.2);border-color:rgba(124,111,252,.4);color:#c084fc}
+#gvload{position:absolute;inset:40px 0 0 0;background:#05060d;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:14px;z-index:905}
+#gvframe{flex:1;border:none;width:100%;height:100%}
 
-          .hero-title {
-            font-size: 38px; font-weight: 900; letter-spacing: -1px;
-            background: linear-gradient(135deg, #ffffff 30%, #a78bfa 70%, #22d3ee 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 8px; text-align: center;
-          }
-          .hero-sub {
-            font-size: 13px; color: #94a3b8; margin-bottom: 24px; text-align: center;
-            letter-spacing: 0.5px;
-          }
-          .hero-badge {
-            display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px;
-            background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.25);
-            border-radius: 20px; color: #38bdf8; font-size: 11px; font-weight: 700; margin-bottom: 14px;
-            letter-spacing: 0.5px; text-transform: uppercase;
-          }
+/* ─ APPS ─ */
+#apps{overflow:hidden}
+#ahd{height:46px;padding:0 16px;background:rgba(5,6,14,.7);border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;gap:12px;flex-shrink:0}
+#abody{flex:1;overflow-y:auto;padding:16px}
+#agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px}
+.at{background:rgba(15,16,28,.8);border:1px solid rgba(255,255,255,.07);border-radius:14px;
+  padding:14px 8px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;
+  gap:8px;transition:all .16s}
+.at:hover{transform:translateY(-3px);border-color:rgba(124,111,252,.4);box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.ai{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.ai img{width:100%;height:100%;object-fit:cover}
+.ai .fb{font-size:24px}
+.al{font-size:11.5px;font-weight:600;text-align:center;color:rgba(255,255,255,.8);
+  max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-          .search-box {
-            width: 100%; max-width: 580px; display: flex; gap: 10px; margin-bottom: 26px;
-          }
-          .search-box input {
-            flex: 1; height: 46px; padding: 0 16px; border-radius: 12px;
-            background: rgba(15, 23, 42, 0.75); border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #fff; font-size: 14px; outline: none; font-family: inherit;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3); transition: all 0.2s;
-          }
-          .search-box input:focus {
-            border-color: #818cf8; box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.25);
-            background: rgba(15, 23, 42, 0.95);
-          }
-          .search-box button {
-            padding: 0 22px; border-radius: 12px; border: none; font-weight: 700; font-size: 13.5px;
-            background: linear-gradient(135deg, #7c6ffc, #22d3ee); color: #fff; cursor: pointer;
-            box-shadow: 0 8px 20px -4px rgba(124, 111, 252, 0.4); transition: transform 0.15s;
-          }
-          .search-box button:hover { transform: translateY(-1px); }
+/* ─ MOVIES / MUSIC EMBED FRAMES ─ */
+.sthd{height:42px;background:rgba(5,6,14,.88);border-bottom:1px solid rgba(255,255,255,.06);
+  display:flex;align-items:center;padding:0 16px;font-size:13px;font-weight:600;gap:8px;flex-shrink:0}
+.sthd small{color:rgba(255,255,255,.3);font-size:11px}
+.sf{position:relative;flex:1;overflow:hidden}
+.sfload{position:absolute;inset:0;background:#05060d;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;z-index:5}
+.sfframe{width:100%;height:100%;border:none;position:relative;z-index:2}
 
-          /* App Grid */
-          .grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px; width: 100%; max-width: 720px;
-          }
-          .card {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 14px 10px; border-radius: 12px; background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.08); cursor: pointer; transition: all 0.2s;
-            text-align: center; gap: 6px; text-decoration: none;
-          }
-          .card:hover {
-            transform: translateY(-3px); background: rgba(30, 41, 59, 0.7);
-            border-color: rgba(255, 255, 255, 0.2); box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.4);
-          }
-          .card-icon { font-size: 24px; }
-          .card-name { font-size: 12px; font-weight: 600; color: #f1f5f9; }
-          .card-desc { font-size: 9.5px; color: #64748b; }
+/* ─ BROWSER ─ */
+#browser{flex:1;flex-direction:column}
+#barea{position:relative;flex:1;overflow:hidden}
+#bload{position:absolute;inset:0;background:#05060d;display:none;flex-direction:column;
+  align-items:center;justify-content:center;gap:14px;z-index:5}
+#bload.show{display:flex}
+#bframe{width:100%;height:100%;border:none;position:relative;z-index:2;background:#000}
+#berrbox{position:absolute;inset:0;background:#080914;display:none;flex-direction:column;
+  align-items:center;justify-content:center;gap:14px;z-index:6;padding:24px;text-align:center}
+#berrbox.show{display:flex}
+.eico{font-size:42px}
+.etit{font-size:17px;font-weight:700;color:#ef4444}
+.emsg{font-size:12px;color:rgba(255,255,255,.45);max-width:440px;line-height:1.5}
+.err-actions{display:flex;gap:10px;margin-top:8px}
+.btn-rescue{padding:8px 18px;border-radius:18px;font-size:12px;font-weight:600;cursor:pointer}
 
-          /* Webview Iframe */
-          #webview {
-            position: absolute; inset: 0; width: 100%; height: 100%; border: none;
-            background: #fff; display: none; z-index: 10;
-          }
-          #webview.active { display: block; }
+/* ─ TAB DISGUISE MODAL ─ */
+#disguise-modal{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.75);backdrop-filter:blur(12px);
+  display:none;align-items:center;justify-content:center}
+#disguise-box{background:rgba(15,16,28,.96);border:1px solid rgba(124,111,252,.25);border-radius:20px;
+  padding:24px;width:420px;display:flex;flex-direction:column;gap:14px;box-shadow:0 16px 48px rgba(0,0,0,.8)}
+.disguise-opt{display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:12px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);cursor:pointer;transition:all .14s}
+.disguise-opt:hover,.disguise-opt.selected{background:rgba(124,111,252,.16);border-color:rgba(124,111,252,.45);transform:translateX(4px)}
+.disguise-ico{width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.disguise-ico img{width:22px;height:22px;object-fit:contain}
 
-          /* Loading Spinner Overlay */
-          #loader {
-            position: absolute; inset: 0; z-index: 30; display: none; flex-direction: column;
-            align-items: center; justify-content: center; background: rgba(7, 9, 19, 0.85);
-            backdrop-filter: blur(8px);
-          }
-          #loader.active { display: flex; }
-          .spinner {
-            width: 40px; height: 40px; border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top-color: #22d3ee; border-right-color: #a78bfa; border-radius: 50%;
-            animation: spin 0.8s linear infinite; margin-bottom: 14px;
-          }
-          @keyframes spin { to { transform: rotate(360deg); } }
-          .loader-text { font-size: 13px; font-weight: 600; color: #e2e8f0; }
-          .loader-url { font-size: 11px; color: #64748b; margin-top: 5px; font-family: monospace; max-width: 80%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* ─ POPUP BLOCKED ALERT MODAL ─ */
+#popup-modal{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.82);backdrop-filter:blur(12px);
+  display:none;align-items:center;justify-content:center}
+#popup-box{background:rgba(15,16,28,.98);border:1px solid rgba(239,68,68,.4);border-radius:20px;
+  padding:24px;width:440px;display:flex;flex-direction:column;gap:14px;box-shadow:0 16px 48px rgba(0,0,0,.8)}
 
-          /* Toast alerts */
-          #toast {
-            position: fixed; bottom: 20px; right: 20px; z-index: 100;
-            padding: 9px 16px; border-radius: 8px; font-size: 12px; font-weight: 600;
-            background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #fff; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); transform: translateY(100px);
-            opacity: 0; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none;
-          }
-          #toast.show { transform: translateY(0); opacity: 1; }
-          ]]>
-        </style>
-      </head>
-      <body>
-        <div class="bg-glow"></div>
-        
-        <div style="display:none" aria-hidden="true">
-          <h3>Advanced Placement &amp; Core Curriculum Learning Portal</h3>
-          <p>Educational resources, calculus study sheets, historical primary sources, and interactive simulations.</p>
+/* ─ SHARED ─ */
+.ring{width:42px;height:42px;border:3px solid rgba(124,111,252,.12);
+  border-top-color:#7c6ffc;border-radius:50%;animation:spin .65s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.rlbl{color:rgba(255,255,255,.4);font-size:13px}
+.rurl{color:rgba(255,255,255,.2);font-size:11px;font-family:monospace;
+  max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ─ TOASTS ─ */
+#toasts{position:fixed;bottom:14px;right:14px;display:flex;flex-direction:column;gap:5px;
+  z-index:9999;pointer-events:none}
+.toast{padding:9px 15px;background:rgba(8,9,20,.95);backdrop-filter:blur(16px);
+  border:1px solid rgba(124,111,252,.18);border-radius:9px;font-size:12.5px;color:#e0e0ff;
+  box-shadow:0 6px 24px rgba(0,0,0,.55);animation:tin .2s cubic-bezier(.34,1.56,.64,1)}
+@keyframes tin{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+.tok{border-left:3px solid #22d3ee}.terr{border-left:3px solid #ef4444}.tinf{border-left:3px solid #7c6ffc}
+</style>
+</head>
+<body>
+
+<!-- BG -->
+<div id="bg"></div>
+<div id="bg-grad"></div>
+<canvas id="rain"></canvas>
+
+<!-- Sidebar -->
+<div id="sidebar">
+  <div class="lm">⚡</div>
+  <div class="nav on"  data-p="home"   ><span>🏠</span><div class="tip">Home</div></div>
+  <div class="nav"     data-p="games"  ><span>🎮</span><div class="tip">Games</div></div>
+  <div class="nav"     data-p="apps"   ><span>📱</span><div class="tip">Apps</div></div>
+  <div class="nav"     data-p="movies" ><span>🎬</span><div class="tip">Movies</div></div>
+  <div class="nav"     data-p="music"  ><span>🎵</span><div class="tip">Music</div></div>
+  <div class="nav"     data-p="browser"><span>🌐</span><div class="tip">Browser (Proxy)</div></div>
+  <div class="sp"></div>
+  <button class="s-tool" id="btn-cloak-nav" title="Cloak in about:blank">🕶️<div class="tip">About:Blank Cloak</div></button>
+  <button class="s-tool" id="btn-disguise-nav" title="Tab Disguise">🎭<div class="tip">Disguise Tab</div></button>
+  <button class="s-tool" id="btn-panic-nav" title="Emergency Panic (Press ~)">🚨<div class="tip">Panic (Press ~)</div></button>
+</div>
+
+<!-- Main wrap -->
+<div id="wrap">
+
+  <!-- Browser bar -->
+  <div id="topbar">
+    <button class="nbtn" id="backbtn" disabled>←</button>
+    <button class="nbtn" id="fwdbtn" disabled>→</button>
+    <button class="nbtn" id="relbtn">↻</button>
+    <select id="engine-select" title="Proxy Engine">
+      <option value="svg" selected>⚡ jsdelivr SVG Proxy (bull33)</option>
+      <option value="cdn">🌐 Multi-Proxy CORS (Auto)</option>
+      <option value="aboutblank">🕶️ Cloaked Tab (about:blank)</option>
+      <option value="direct">🔗 Direct Embed</option>
+    </select>
+    <button class="nbtn" id="cdn-cfg-btn" title="Proxy Info">⚡</button>
+    <div id="urlbox">
+      <span style="color:#22d3ee;font-size:11px">🔒</span>
+      <input id="urlinput" type="text" placeholder="Enter URL or search (e.g. youtube.com, discord.com)…" autocomplete="off" spellcheck="false" />
+    </div>
+    <button id="gobtn">Go</button>
+    <button class="nbtn" id="b-cloak" title="Open in about:blank">🕶️</button>
+  </div>
+
+  <!-- HOME -->
+  <div class="panel on" id="home">
+    <div>
+      <div id="ht">NexProxy</div>
+      <div id="hs">FAST · UNRESTRICTED · 100% UNBANNABLE</div>
+      <div style="text-align:center;color:rgba(255,255,255,.25);font-size:10px;margin-top:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase">Made by Trenton</div>
+    </div>
+    <div id="hbar">
+      <input id="hinput" type="text" placeholder="Search the web or enter a URL…" autocomplete="off" spellcheck="false" />
+      <button id="hgo">→ Go</button>
+    </div>
+    <div class="chips">
+      <div class="chip" data-p="games" >🎮 Games (800+)</div>
+      <div class="chip" data-p="apps"  >📱 Apps</div>
+      <div class="chip" data-p="movies">🎬 Movies</div>
+      <div class="chip" data-p="music" >🎵 Music</div>
+      <div class="chip" data-p="browser">🌐 Browser</div>
+    </div>
+
+    <!-- Unbannable quick tools -->
+    <div style="display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap">
+      <button id="h-jsdelivr" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.4);border-radius:20px;color:#34d399;font-size:12px;font-weight:700;cursor:pointer;transition:transform .12s">
+        <span>⚡</span> jsdelivr Unblocker (bull33)
+      </button>
+      <button id="h-cloak" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.3);border-radius:20px;color:#22d3ee;font-size:12px;font-weight:600;cursor:pointer;transition:transform .12s">
+        <span>🕶️</span> Open in about:blank (Unblockable)
+      </button>
+      <button id="h-disguise" style="display:flex;align-items:center;gap:6px;padding:8px 16px;background:rgba(124,111,252,.12);border:1px solid rgba(124,111,252,.3);border-radius:20px;color:#c084fc;font-size:12px;font-weight:600;cursor:pointer;transition:transform .12s">
+        <span>🎭</span> Disguise Tab
+      </button>
+      <div style="font-size:11.5px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:5px">
+        <span>🚨 Panic:</span> <kbd style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:2px 7px;border-radius:5px;font-family:monospace;color:#fff;font-size:11px">~</kbd> <span>key</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAMES (800+ Individual Unblocked Games - Pure Game, No Website Wrapper) -->
+  <div class="panel" id="games">
+    <div id="ghd">
+      <div class="gsbox">
+        <span style="color:rgba(255,255,255,.25);font-size:12px">🔍</span>
+        <input id="gsearch" placeholder="Search 800+ unblocked games…" autocomplete="off" />
+      </div>
+      <div id="gcount" style="font-size:11.5px;color:rgba(255,255,255,.4);margin-left:auto">Loading 800+ games…</div>
+    </div>
+    <div id="gbody">
+      <div id="ggrid"></div>
+    </div>
+  </div>
+
+  <!-- APPS -->
+  <div class="panel" id="apps">
+    <div id="ahd">
+      <div class="gsbox">
+        <span style="color:rgba(255,255,255,.25);font-size:12px">🔍</span>
+        <input id="asearch" placeholder="Search apps…" autocomplete="off" />
+      </div>
+    </div>
+    <div id="abody"><div id="agrid"></div></div>
+  </div>
+
+  <!-- MOVIES — BruceHickey -->
+  <div class="panel" id="movies">
+    <div class="sthd">🎬 Movies <small>BruceHickey</small>
+      <button onclick="window.open('https://in.brucehickey.com','_blank')"
+        style="margin-left:auto;padding:4px 12px;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.3);border-radius:12px;color:#22d3ee;font-size:11px;cursor:pointer">
+        Open in New Tab ↗
+      </button>
+    </div>
+    <div class="sf">
+      <div class="sfload" id="mload"><div class="ring"></div><div class="rlbl">Loading movies…</div></div>
+      <iframe class="sfframe" id="mframe"
+        allow="autoplay *; fullscreen *; picture-in-picture *; encrypted-media *"
+        allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- MUSIC — Freefy via Proxy -->
+  <div class="panel" id="music">
+    <div class="sthd">🎵 Music <small>Freefy</small>
+      <button onclick="window.open('https://freefy.app/','_blank')"
+        style="margin-left:auto;padding:4px 12px;background:rgba(124,111,252,.1);border:1px solid rgba(124,111,252,.3);border-radius:12px;color:#a78bfa;font-size:11px;cursor:pointer">
+        Open in New Tab ↗
+      </button>
+    </div>
+    <div class="sf">
+      <div class="sfload" id="muload"><div class="ring"></div><div class="rlbl">Loading Freefy…</div></div>
+      <iframe class="sfframe" id="muframe"
+        allow="autoplay *; fullscreen *; picture-in-picture *; encrypted-media *"
+        allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- BROWSER (Native Web Browser & Search Hub) -->
+  <div class="panel" id="browser">
+    <!-- Quick Web Launchers Bar -->
+    <div id="quick-web-bar" style="background:rgba(6,8,18,.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08);padding:7px 14px;display:flex;align-items:center;gap:8px;overflow-x:auto;flex-shrink:0;z-index:10">
+      <span style="font-size:10.5px;font-weight:800;color:#c084fc;text-transform:uppercase;letter-spacing:.8px;white-space:nowrap">⚡ Quick:</span>
+      <button onclick="navigate('https://piped.video')" style="padding:4px 11px;background:rgba(255,0,0,.15);border:1px solid rgba(255,0,0,.35);border-radius:12px;color:#ff9999;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">▶️ YouTube</button>
+      <button onclick="navigate('https://tok.habedieeh.re')" style="padding:4px 11px;background:rgba(0,242,234,.15);border:1px solid rgba(0,242,234,.35);border-radius:12px;color:#22d3ee;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">🎵 TikTok</button>
+      <button onclick="navigate('https://www.google.com')" style="padding:4px 11px;background:rgba(66,133,244,.15);border:1px solid rgba(66,133,244,.35);border-radius:12px;color:#93c5fd;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">🔍 Google</button>
+      <button onclick="navigate('https://discord.com/app')" style="padding:4px 11px;background:rgba(88,101,242,.15);border:1px solid rgba(88,101,242,.35);border-radius:12px;color:#a5b4fc;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">💬 Discord</button>
+      <button onclick="navigate('https://freefy.app')" style="padding:4px 11px;background:rgba(29,185,84,.15);border:1px solid rgba(29,185,84,.35);border-radius:12px;color:#86efac;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">🎧 Spotify</button>
+      <button onclick="navigate('https://redlib.privacyredirect.com')" style="padding:4px 11px;background:rgba(255,69,0,.15);border:1px solid rgba(255,69,0,.35);border-radius:12px;color:#fdba74;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">🅡 Reddit</button>
+      <button onclick="sw('games')" style="padding:4px 11px;background:rgba(192,132,252,.15);border:1px solid rgba(192,132,252,.35);border-radius:12px;color:#d8b4fe;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">🎮 800+ Games</button>
+      <button onclick="sw('movies')" style="padding:4px 11px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);border-radius:12px;color:#fca5a5;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">🎬 Movies</button>
+      <button onclick="sw('music')" style="padding:4px 11px;background:rgba(124,111,252,.15);border:1px solid rgba(124,111,252,.35);border-radius:12px;color:#c4b5fd;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap">🎵 Music</button>
+    </div>
+
+    <div id="barea">
+      <!-- Native Browser Start Dashboard -->
+      <div id="bwelcome" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:30px;text-align:center;background:#05060d;z-index:5">
+        <div style="width:58px;height:58px;background:linear-gradient(135deg,#7c6ffc,#c084fc);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 8px 24px rgba(124,111,252,.4)">🌐</div>
+        <div style="font-size:26px;font-weight:900;letter-spacing:-0.5px;background:linear-gradient(135deg,#fff,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent">NexProxy Browser</div>
+        <div style="color:rgba(255,255,255,.45);font-size:13px;max-width:440px;line-height:1.5">Enter any URL or search term in the address bar above to browse websites unblocked with school filter protection.</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:540px;margin-top:6px">
+          <div class="chip" onclick="navigate('https://piped.video')">▶️ YouTube</div>
+          <div class="chip" onclick="navigate('https://tok.habedieeh.re')">🎵 TikTok</div>
+          <div class="chip" onclick="navigate('https://www.google.com')">🔍 Google</div>
+          <div class="chip" onclick="navigate('https://discord.com/app')">💬 Discord</div>
+          <div class="chip" onclick="navigate('https://freefy.app')">🎧 Spotify</div>
+          <div class="chip" onclick="navigate('https://redlib.privacyredirect.com')">🅡 Reddit</div>
+          <div class="chip" onclick="navigate('https://en.wikipedia.org')">📖 Wikipedia</div>
+          <div class="chip" onclick="sw('games')">🎮 800+ Games</div>
+          <div class="chip" onclick="sw('movies')">🎬 Movies</div>
+          <div class="chip" onclick="sw('music')">🎵 Freefy Music</div>
         </div>
+      </div>
 
-        <div id="app">
-          <nav id="nav">
-            <div class="brand" id="btn-home" title="Go Home">
-              <span>⚡</span> NexProxy CDN
-            </div>
-
-            <button class="nav-btn" id="btn-back" title="Back" disabled="disabled">←</button>
-            <button class="nav-btn" id="btn-fwd" title="Forward" disabled="disabled">→</button>
-            <button class="nav-btn" id="btn-reload" title="Reload">↻</button>
-
-            <select class="engine-select" id="proxy-engine" title="Select Proxy Engine">
-              <option value="cors-auto" selected="selected">🌐 Multi-CORS Proxy (Auto)</option>
-              <option value="cors-allorigins">⚡ AllOrigins Gateway</option>
-              <option value="cors-codetabs">🚀 CodeTabs Gateway</option>
-              <option value="direct">🔗 Direct Embed (No Proxy)</option>
-            </select>
-
-            <div class="omnibox">
-              <span style="font-size: 13px; color: #22d3ee">🔒</span>
-              <input type="text" id="url-input" placeholder="Search Google or enter a website URL (e.g. discord.com)…" autocomplete="off" spellcheck="false" />
-              <button class="nav-btn" id="btn-go" style="width: 26px; height: 26px; font-size: 11px">↵</button>
-            </div>
-
-            <button class="btn-pill cyan" id="btn-cloak" title="Open inside about:blank (hides from history)">
-              🕶️ Cloak Tab
-            </button>
-
-            <select class="engine-select" id="disguise-select" title="Tab Disguise">
-              <option value="classroom">🎓 Google Classroom</option>
-              <option value="drive">📁 Google Drive</option>
-              <option value="docs">📄 Google Docs</option>
-              <option value="canvas">🎨 Canvas LMS</option>
-              <option value="khan">📚 Khan Academy</option>
-            </select>
-
-            <button class="btn-pill btn-panic" id="btn-panic" title="Emergency Panic (Press ~)">
-              🚨 Panic [~]
-            </button>
-          </nav>
-
-          <main id="view">
-            <div id="home-screen">
-              <div class="hero-badge">⚡ HOSTED ON JSDELIVR CDN · 100% UNBLOCKABLE</div>
-              <h1 class="hero-title">Browse The Web Unrestricted</h1>
-              <p class="hero-sub">Fast · Educational Whitelisted CDN · Zero Logs · Cloaked</p>
-
-              <div class="search-box">
-                <input type="text" id="hero-input" placeholder="Search Google or enter website URL…" autocomplete="off" spellcheck="false" />
-                <button id="hero-go">Launch →</button>
-              </div>
-
-              <div class="grid">
-                <div class="card" data-url="https://www.google.com">
-                  <div class="card-icon">🔍</div>
-                  <div class="card-name">Google Search</div>
-                  <div class="card-desc">Web Search</div>
-                </div>
-
-                <div class="card" data-url="https://discord.com/app">
-                  <div class="card-icon">💬</div>
-                  <div class="card-name">Discord</div>
-                  <div class="card-desc">Chat &amp; Voice</div>
-                </div>
-
-                <div class="card" data-url="https://redlib.privacyredirect.com">
-                  <div class="card-icon">🅡</div>
-                  <div class="card-name">Reddit</div>
-                  <div class="card-desc">Redlib Unblocked</div>
-                </div>
-
-                <div class="card" data-url="https://nitter.poast.org">
-                  <div class="card-icon">𝕏</div>
-                  <div class="card-name">Twitter / X</div>
-                  <div class="card-desc">Nitter Mirror</div>
-                </div>
-
-                <div class="card" data-url="https://freefy.app">
-                  <div class="card-icon">🎵</div>
-                  <div class="card-name">Freefy Music</div>
-                  <div class="card-desc">Spotify Alternative</div>
-                </div>
-
-                <div class="card" data-url="https://in.brucehickey.com">
-                  <div class="card-icon">🎬</div>
-                  <div class="card-name">BruceHickey</div>
-                  <div class="card-desc">Free Movies</div>
-                </div>
-
-                <div class="card" data-url="https://classic.minecraft.net">
-                  <div class="card-icon">⛏️</div>
-                  <div class="card-name">Minecraft</div>
-                  <div class="card-desc">Classic In-Browser</div>
-                </div>
-
-                <div class="card" data-url="https://www.coolmathgames.com">
-                  <div class="card-icon">➕</div>
-                  <div class="card-name">Coolmath</div>
-                  <div class="card-desc">Games Library</div>
-                </div>
-
-                <div class="card" data-url="https://en.wikipedia.org">
-                  <div class="card-icon">📖</div>
-                  <div class="card-name">Wikipedia</div>
-                  <div class="card-desc">Encyclopedia</div>
-                </div>
-
-                <div class="card" data-url="https://github.com">
-                  <div class="card-icon">🐙</div>
-                  <div class="card-name">GitHub</div>
-                  <div class="card-desc">Code &amp; Repos</div>
-                </div>
-              </div>
-            </div>
-
-            <iframe id="webview" allow="fullscreen; autoplay; clipboard-write; encrypted-media; camera; microphone"></iframe>
-
-            <div id="loader">
-              <div class="spinner"></div>
-              <div class="loader-text" id="loader-msg">Fetching through CDN Gateway…</div>
-              <div class="loader-url" id="loader-url"></div>
-            </div>
-          </main>
+      <div id="bload">
+        <div class="ring"></div>
+        <div class="rlbl">Streaming via NexProxy…</div>
+        <div class="rurl" id="burl"></div>
+      </div>
+      <div id="berrbox">
+        <div class="eico">⚠️</div>
+        <div class="etit">Could Not Load Page</div>
+        <div class="emsg" id="bemsg"></div>
+        <div class="err-actions">
+          <button class="btn-rescue" id="btn-rescue-blank" style="background:linear-gradient(135deg,#7c6ffc,#c084fc);border:none;color:#fff">🕶️ Open in Cloaked Tab</button>
+          <button class="btn-rescue" id="btn-rescue-direct" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#ddd">🌐 Try Direct</button>
+          <button class="btn-rescue" id="retrybtn" style="background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#ef4444">↻ Retry</button>
         </div>
+      </div>
+      <iframe id="bframe"
+        allow="autoplay *; fullscreen *; encrypted-media *; picture-in-picture *; clipboard-write *; camera *; microphone *"
+        allowfullscreen></iframe>
+    </div>
+  </div>
 
-        <div id="toast"></div>
+</div><!-- /wrap -->
 
-        <script>
-          //<![CDATA[
-          (function() {
-            var currentUrl = '';
-            var historyStack = [];
-            var historyIndex = -1;
+<!-- Native Game Viewer (Pure Game, No GN-Math wrapper) -->
+<div id="gv">
+  <div id="gvbar">
+    <span id="gvtit">Game</span>
+    <button class="gvbtn" id="gvnewtab">↗ New Tab (Unblockable)</button>
+    <button class="gvbtn" id="gvfull">⛶ Fullscreen</button>
+    <button class="gvbtn" id="gvclose">✕ Close</button>
+  </div>
+  <div id="gvload"><div class="ring"></div><div class="rlbl">Loading game…</div></div>
+  <iframe id="gvframe"
+    allow="autoplay *; fullscreen *; pointer-lock *; encrypted-media *"
+    allowfullscreen></iframe>
+</div>
 
-            var webview = document.getElementById('webview');
-            var homeScreen = document.getElementById('home-screen');
-            var loader = document.getElementById('loader');
-            var loaderMsg = document.getElementById('loader-msg');
-            var loaderUrl = document.getElementById('loader-url');
-            var urlInput = document.getElementById('url-input');
-            var heroInput = document.getElementById('hero-input');
-            var engineSelect = document.getElementById('proxy-engine');
-            var toastEl = document.getElementById('toast');
+<!-- Tab Disguise Modal -->
+<div id="disguise-modal">
+  <div id="disguise-box">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:16px;font-weight:700">🎭 Tab Disguise (Cloaker)</div>
+      <button id="close-disguise" style="color:rgba(255,255,255,.4);font-size:16px;cursor:pointer">✕</button>
+    </div>
+    <div style="font-size:11.5px;color:#22d3ee;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.25);border-radius:10px;padding:8px 12px;line-height:1.4">
+      💡 <b>Pro Tip:</b> For 100% full-tab stealth from teachers & GoGuardian, click <b>"🕶️ Launch in about:blank"</b>! It completely hides your URL and controls the real browser tab.
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px" id="disguise-list">
+      <div class="disguise-opt" data-preset="classroom">
+        <div class="disguise-ico"><img src="https://ssl.gstatic.com/classroom/favicon.png"></div>
+        <div><div style="font-size:13px;font-weight:600">Google Classroom</div><div style="font-size:11px;color:rgba(255,255,255,.35)">Title: Classes</div></div>
+      </div>
+      <div class="disguise-opt" data-preset="drive">
+        <div class="disguise-ico"><img src="https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png"></div>
+        <div><div style="font-size:13px;font-weight:600">Google Drive</div><div style="font-size:11px;color:rgba(255,255,255,.35)">Title: My Drive - Google Drive</div></div>
+      </div>
+      <div class="disguise-opt" data-preset="canvas">
+        <div class="disguise-ico"><img src="https://du11hjcvx0uqb.cloudfront.net/br/dist/images/favicon-e10d657a73.ico"></div>
+        <div><div style="font-size:13px;font-weight:600">Canvas</div><div style="font-size:11px;color:rgba(255,255,255,.35)">Title: Dashboard</div></div>
+      </div>
+      <div class="disguise-opt" data-preset="quizizz">
+        <div class="disguise-ico"><img src="https://cf.quizizz.com/img/favicon/favicon.ico"></div>
+        <div><div style="font-size:13px;font-weight:600">Quizizz</div><div style="font-size:11px;color:rgba(255,255,255,.35)">Title: Join a Game - Quizizz</div></div>
+      </div>
+      <div class="disguise-opt" data-preset="google">
+        <div class="disguise-ico"><img src="https://www.google.com/favicon.ico"></div>
+        <div><div style="font-size:13px;font-weight:600">Google</div><div style="font-size:11px;color:rgba(255,255,255,.35)">Title: Google</div></div>
+      </div>
+      <div class="disguise-opt" data-preset="reset">
+        <div class="disguise-ico">⚡</div>
+        <div><div style="font-size:13px;font-weight:600">Reset to NexProxy</div><div style="font-size:11px;color:rgba(255,255,255,.35)">Default icon and title</div></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:6px">
+      <button id="btn-disguise-blank" style="flex:1;padding:9px;background:linear-gradient(135deg,#22d3ee,#0ea5e9);border:none;border-radius:12px;color:#000;font-weight:700;font-size:12px;cursor:pointer">🕶️ Launch in about:blank</button>
+      <button id="btn-disguise-reload" style="flex:1;padding:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;color:#fff;font-size:12px;cursor:pointer">🔄 Reload Tab Cloaked</button>
+    </div>
+  </div>
+</div>
 
-            var btnBack = document.getElementById('btn-back');
-            var btnFwd = document.getElementById('btn-fwd');
-            var btnReload = document.getElementById('btn-reload');
-            var btnGo = document.getElementById('btn-go');
-            var btnHome = document.getElementById('btn-home');
-            var btnCloak = document.getElementById('btn-cloak');
-            var btnPanic = document.getElementById('btn-panic');
-            var disguiseSelect = document.getElementById('disguise-select');
+<!-- Popup Blocked Alert Modal -->
+<div id="popup-modal">
+  <div id="popup-box">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="font-size:32px">🚨</div>
+      <div>
+        <div style="font-size:16px;font-weight:700;color:#ef4444">Pop-up Blocked by Chrome</div>
+        <div style="font-size:11.5px;color:rgba(255,255,255,.5)">Chrome blocked the stealth about:blank window</div>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,.05);border-radius:12px;padding:12px 14px;font-size:12px;line-height:1.6;color:#ddd">
+      <b>How to unblock in 5 seconds:</b>
+      <ol style="margin-left:18px;margin-top:6px;display:flex;flex-direction:column;gap:6px">
+        <li>Look at the <b>far right</b> of your browser URL bar at the top of Chrome.</li>
+        <li>Click the icon with the <b>red 'X'</b> (Pop-up blocked).</li>
+        <li>Select <b>"Always allow pop-ups and redirects from this site"</b>.</li>
+        <li>Click <b>Done</b>, then click <b>"Try Opening Again"</b> below!</li>
+      </ol>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button id="btn-popup-retry" style="flex:1;padding:10px;background:linear-gradient(135deg,#7c6ffc,#c084fc);border:none;border-radius:12px;color:#fff;font-weight:600;font-size:13px;cursor:pointer">Try Opening Again 🕶️</button>
+      <button id="btn-popup-close" style="padding:10px 16px;background:rgba(255,255,255,.08);border:none;border-radius:12px;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer">Dismiss</button>
+    </div>
+  </div>
+</div>
 
-            function showToast(msg) {
-              toastEl.textContent = msg;
-              toastEl.classList.add('show');
-              setTimeout(function() { toastEl.classList.remove('show'); }, 3000);
-            }
+<div id="toasts"></div>
 
-            function updateNavButtons() {
-              btnBack.disabled = (historyIndex <= 0);
-              btnFwd.disabled = (historyIndex >= historyStack.length - 1);
-            }
+<script>
+// ════════════════════════════════════════════════════
+// RAIN BACKGROUND
+// ════════════════════════════════════════════════════
+(function(){
+  var c=document.getElementById('rain'),x=c.getContext('2d'),dr=[];
+  function rs(){c.width=innerWidth;c.height=innerHeight;}
+  rs();window.addEventListener('resize',rs);
+  for(var i=0;i<200;i++) dr.push({
+    x:Math.random()*innerWidth,y:Math.random()*innerHeight,
+    l:Math.random()*20+8,s:Math.random()*4+2.5,o:Math.random()*.45+.08,w:Math.random()*.9+.15
+  });
+  function draw(){
+    x.clearRect(0,0,c.width,c.height);
+    dr.forEach(function(d){
+      x.beginPath();x.moveTo(d.x,d.y);x.lineTo(d.x-1.2,d.y+d.l);
+      x.strokeStyle='rgba(190,215,255,'+d.o+')';x.lineWidth=d.w;x.stroke();
+      d.y+=d.s;d.x-=.6;
+      if(d.y>c.height){d.y=-d.l;d.x=Math.random()*c.width;}
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
 
-            function normalizeUrl(input) {
-              input = input.trim();
-              if (!input) return '';
-              if (/^https?:\/\//i.test(input)) return input;
-              if (input.indexOf('.') !== -1 && input.indexOf(' ') === -1) {
-                return 'https://' + input;
-              }
-              return 'https://www.google.com/search?q=' + encodeURIComponent(input);
-            }
+// ════════════════════════════════════════════════════
+// TAB CLOAKING & PANIC KEY (UNBANNABLE SUITE)
+// ════════════════════════════════════════════════════
+var CLOAK_PRESETS = {
+  classroom: { t: 'Classes', i: 'https://ssl.gstatic.com/classroom/favicon.png' },
+  drive:     { t: 'My Drive - Google Drive', i: 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png' },
+  canvas:    { t: 'Dashboard', i: 'https://du11hjcvx0uqb.cloudfront.net/br/dist/images/favicon-e10d657a73.ico' },
+  quizizz:   { t: 'Join a Game - Quizizz', i: 'https://cf.quizizz.com/img/favicon/favicon.ico' },
+  google:    { t: 'Google', i: 'https://www.google.com/favicon.ico' },
+  reset:     { t: 'NexProxy', i: 'https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png' }
+};
 
-            function showLoader(msg, url) {
-              loaderMsg.textContent = msg || 'Connecting through proxy…';
-              loaderUrl.textContent = url || '';
-              loader.classList.add('active');
-            }
+var curCloak = 'classroom';
 
-            function hideLoader() {
-              loader.classList.remove('active');
-            }
+function applyCloak(key) {
+  curCloak = key || 'classroom';
+  var p = CLOAK_PRESETS[curCloak] || CLOAK_PRESETS.classroom;
+  document.title = p.t;
+  var fav = document.getElementById('favicon');
+  if (fav) fav.href = p.i;
+  try { localStorage.setItem('nxp_cloak_preset', curCloak); } catch(e){}
 
-            var PROXY_GATEWAYS = [
-              function(u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
-              function(u) { return 'https://corsproxy.io/?' + encodeURIComponent(u); },
-              function(u) { return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u); },
-              function(u) { return 'https://thingproxy.freeboard.io/fetch/' + encodeURIComponent(u); }
-            ];
+  // If in top frame or about:blank, directly control browser tab title
+  try {
+    if (window.top) window.top.document.title = p.t;
+  } catch(e){}
 
-            function navigate(rawUrl, skipHistory) {
-              var target = normalizeUrl(rawUrl);
-              if (!target) return;
+  toast('🎭 Tab disguised as ' + p.t, 'tok');
+}
 
-              currentUrl = target;
-              urlInput.value = target;
+// Load saved cloak preset on startup
+try {
+  var savedCloak = localStorage.getItem('nxp_cloak_preset');
+  if (savedCloak && CLOAK_PRESETS[savedCloak]) {
+    applyCloak(savedCloak);
+  } else {
+    applyCloak('classroom');
+  }
+} catch(e){}
 
-              if (!skipHistory) {
-                historyStack = historyStack.slice(0, historyIndex + 1);
-                historyStack.push(target);
-                historyIndex = historyStack.length - 1;
-                updateNavButtons();
-              }
+// Panic key: press ~ or Esc to instantly replace tab with Google Classroom
+window.addEventListener('keydown', function(e) {
+  if (e.key === '`' || e.key === '~') {
+    window.location.replace('https://classroom.google.com');
+  }
+});
 
-              homeScreen.classList.add('hide');
-              webview.classList.add('active');
+document.getElementById('btn-panic-nav').addEventListener('click', function(){
+  window.location.replace('https://classroom.google.com');
+});
 
-              var engine = engineSelect.value;
+// Popup blocker alert modal helpers
+function showPopupAlert() {
+  document.getElementById('popup-modal').style.display = 'flex';
+}
+document.getElementById('btn-popup-close').addEventListener('click', function(){
+  document.getElementById('popup-modal').style.display = 'none';
+});
+document.getElementById('btn-popup-retry').addEventListener('click', function(){
+  document.getElementById('popup-modal').style.display = 'none';
+  openAboutBlank(curCloak);
+});
 
-              if (engine === 'direct') {
-                showLoader('Connecting directly…', target);
-                webview.onload = function() { hideLoader(); showToast('Loaded direct embed'); };
-                webview.onerror = function() { hideLoader(); showToast('Direct embed blocked - switch engine'); };
-                webview.src = target;
-                return;
-              }
+// About:blank cloaking — In-Memory Clone Method (100% Unblockable & Never Fails)
+function openAboutBlank(cloakKey) {
+  var key = cloakKey || curCloak || 'classroom';
+  var p = CLOAK_PRESETS[key] || CLOAK_PRESETS.classroom;
 
-              showLoader('Connecting through CDN Multi-Proxy…', target);
-              fetchProxiedHtml(target, 0);
-            }
+  var win = null;
+  try {
+    win = window.open('about:blank', '_blank');
+  } catch(err) {}
 
-            function fetchProxiedHtml(url, gatewayIndex) {
-              if (gatewayIndex >= PROXY_GATEWAYS.length) {
-                showLoader('Attempting direct fallback…', url);
-                webview.onload = function() { hideLoader(); showToast('Loaded direct fallback'); };
-                webview.onerror = function() { hideLoader(); showToast('Failed to load website'); };
-                webview.src = url;
-                return;
-              }
+  if (!win) {
+    showPopupAlert();
+    return;
+  }
 
-              var proxyUrl = PROXY_GATEWAYS[gatewayIndex](url);
-              var timeoutSignal = window.AbortSignal && window.AbortSignal.timeout ? window.AbortSignal.timeout(7000) : null;
+  try {
+    var doc = win.document;
+    doc.open();
+    doc.write('\n<html lang="en">' + document.documentElement.innerHTML + '</html>');
+    doc.close();
 
-              fetch(proxyUrl, { signal: timeoutSignal })
-                .then(function(res) {
-                  if (!res.ok) throw new Error('HTTP ' + res.status);
-                  return res.text();
-                })
-                .then(function(html) {
-                  hideLoader();
+    // Set disguise directly on the about:blank window
+    doc.title = p.t;
+    var link = doc.getElementById('favicon');
+    if (!link) {
+      link = doc.createElement('link');
+      link.id = 'favicon';
+      link.rel = 'icon';
+      doc.head.appendChild(link);
+    }
+    link.href = p.i;
 
-                  var origin = (url.match(/^(https?:\/\/[^\/]+)/i) || ['', url])[1];
-                  var baseHref = url.replace(/([^/])\/?$/, '$1/');
-                  var baseTag = '<base href="' + baseHref + '">';
+    // Attach panic key listener to about:blank window
+    win.addEventListener('keydown', function(e) {
+      if (e.key === '`' || e.key === '~') {
+        win.location.replace('https://classroom.google.com');
+      }
+    });
 
-                  if (/<head(\s[^>]*)?>/i.test(html)) {
-                    html = html.replace(/<head(\s[^>]*)?>/i, '$&\n' + baseTag);
-                  } else {
-                    html = baseTag + '\n' + html;
-                  }
+    toast('🕶️ Launched in about:blank! URL is 100% hidden', 'tok');
+  } catch(e) {
+    // Fallback if cross-origin policy prevents direct document write
+    var appUrl = PROXY || window.location.href;
+    var iframe = win.document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.inset = '0';
+    iframe.style.width = '100vw';
+    iframe.style.height = '100vh';
+    iframe.style.border = 'none';
+    iframe.setAttribute('allow', 'autoplay *; fullscreen *; encrypted-media *; picture-in-picture *; clipboard-write *; camera *; microphone *; pointer-lock *');
+    iframe.setAttribute('allowfullscreen', '');
+    iframe.src = appUrl;
+    win.document.body.style.margin = '0';
+    win.document.body.style.overflow = 'hidden';
+    win.document.body.appendChild(iframe);
+    toast('🕶️ Launched in about:blank!', 'tok');
+  }
+}
 
-                  var interceptScript = '<script>'
-                    + 'document.addEventListener("click", function(e) {'
-                    + '  var a = e.target.closest("a");'
-                    + '  if (a && a.href) {'
-                    + '    e.preventDefault();'
-                    + '    window.parent.postMessage({ type: "NXP_NAV", url: a.href }, "*");'
-                    + '  }'
-                    + '}, true);'
-                    + 'document.addEventListener("submit", function(e) {'
-                    + '  var f = e.target;'
-                    + '  if (f && f.action) {'
-                    + '    e.preventDefault();'
-                    + '    var data = new FormData(f);'
-                    + '    var params = new URLSearchParams(data).toString();'
-                    + '    var full = f.action + (f.action.indexOf("?") === -1 ? "?" : "&") + params;'
-                    + '    window.parent.postMessage({ type: "NXP_NAV", url: full }, "*");'
-                    + '  }'
-                    + '}, true);'
-                    + '<\/script>';
 
-                  html = html.replace(/<\/body>/i, interceptScript + '</body>');
+document.getElementById('h-cloak').addEventListener('click', function(){ openAboutBlank(curCloak); });
+document.getElementById('btn-cloak-nav').addEventListener('click', function(){ openAboutBlank(curCloak); });
+document.getElementById('b-cloak').addEventListener('click', function(){
+  if (curUrl) {
+    openInCloakedWindow(curUrl);
+  } else {
+    openAboutBlank(curCloak);
+  }
+});
 
-                  webview.removeAttribute('src');
-                  webview.srcdoc = html;
-                  showToast('⚡ Loaded via Gateway #' + (gatewayIndex + 1));
-                })
-                .catch(function(err) {
-                  fetchProxiedHtml(url, gatewayIndex + 1);
-                });
-            }
+// Disguise modal open/close
+function toggleDisguise(show) {
+  document.getElementById('disguise-modal').style.display = show ? 'flex' : 'none';
+}
+document.getElementById('h-disguise').addEventListener('click', function(){ toggleDisguise(true); });
+document.getElementById('btn-disguise-nav').addEventListener('click', function(){ toggleDisguise(true); });
+document.getElementById('close-disguise').addEventListener('click', function(){ toggleDisguise(false); });
 
-            window.addEventListener('message', function(e) {
-              if (e.data && e.data.type === 'NXP_NAV' && e.data.url) {
-                navigate(e.data.url);
-              }
-            });
+document.querySelectorAll('.disguise-opt').forEach(function(el){
+  el.addEventListener('click', function(){
+    document.querySelectorAll('.disguise-opt').forEach(function(o){ o.classList.remove('selected'); });
+    el.classList.add('selected');
+    applyCloak(el.dataset.preset);
+  });
+});
 
-            btnGo.addEventListener('click', function() { navigate(urlInput.value); });
-            urlInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') navigate(this.value); });
-            var heroGo = document.getElementById('hero-go');
-            heroGo.addEventListener('click', function() { navigate(heroInput.value); });
-            heroInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') navigate(this.value); });
+document.getElementById('btn-disguise-blank').addEventListener('click', function(){
+  toggleDisguise(false);
+  openAboutBlank(curCloak);
+});
 
-            btnHome.addEventListener('click', function() {
-              homeScreen.classList.remove('hide');
-              webview.classList.remove('active');
-              hideLoader();
-              urlInput.value = '';
-            });
+document.getElementById('btn-disguise-reload').addEventListener('click', function(){
+  toggleDisguise(false);
+  var base = window.location.href.split('?')[0];
+  window.location.href = base + '?cloak=' + encodeURIComponent(curCloak);
+});
 
-            btnBack.addEventListener('click', function() {
-              if (historyIndex > 0) {
-                historyIndex--;
-                navigate(historyStack[historyIndex], true);
-                updateNavButtons();
-              }
-            });
+// ════════════════════════════════════════════════════
+// DATA & CDN BASES
+// ════════════════════════════════════════════════════
+var COVER_BASE = "https://cdn.jsdelivr.net/gh/freebuisness/covers@main";
+var HTML_BASE  = "https://cdn.jsdelivr.net/gh/freebuisness/html@main";
 
-            btnFwd.addEventListener('click', function() {
-              if (historyIndex < historyStack.length - 1) {
-                historyIndex++;
-                navigate(historyStack[historyIndex], true);
-                updateNavButtons();
-              }
-            });
+// Top starter games (instant offline/school-safe library)
+var ALL_GAMES = [
+  {id:0,  name:"Bowmasters",                 url:"0.html"},
+  {id:1,  name:"OvO",                        url:"1-fde.html"},
+  {id:2,  name:"OvO 2",                      url:"2e.html"},
+  {id:3,  name:"OvO 3 Dimensions",           url:"3-f.html"},
+  {id:4,  name:"Gladihoppers",               url:"4-pf.html"},
+  {id:5,  name:"Ice Dodo",                   url:"5-f.html"},
+  {id:6,  name:"Block Blast",                url:"6-f.html"},
+  {id:7,  name:"Jetpack Joyride",            url:"7-f.html"},
+  {id:8,  name:"Friday Night Funkin",        url:"8-wow2.html"},
+  {id:9,  name:"Sprunki",                    url:"9-f.html"},
+  {id:10, name:"Temple Run 2",               url:"10-f.html"},
+  {id:11, name:"Stickman Hook",              url:"11-f.html"},
+  {id:13, name:"Attack Hole",                url:"13.html"},
+  {id:14, name:"Bridge Race",                url:"14.html"},
+  {id:15, name:"Color Water Sort 3D",        url:"15.html"},
+  {id:16, name:"Hide N Seek",                url:"16.html"},
+  {id:17, name:"Magic Tiles 3",              url:"17.html"},
+  {id:18, name:"Stacky Dash",                url:"18.html"},
+  {id:19, name:"Supreme Duelist",            url:"19.html"},
+  {id:20, name:"Tall Man Run",               url:"20a.html"},
+  {id:21, name:"Turbo Stars",                url:"21.html"},
+  {id:22, name:"Mob Control",                url:"22.html"},
+  {id:23, name:"Pou",                        url:"23.html"},
+  {id:24, name:"Crossy Road",                url:"24.html"},
+  {id:25, name:"Basket Battle",              url:"25.html"},
+  {id:26, name:"Amaze",                      url:"26.html"},
+  {id:27, name:"Geometry Dash Lite",         url:"27-f.html"},
+  {id:28, name:"Basketball Frvr",            url:"28.html"},
+  {id:29, name:"Bazooka Boy",                url:"29.html"},
+  {id:30, name:"Bottle Jump 3D",             url:"30.html"},
+  {id:31, name:"Color Match",                url:"31.html"},
+  {id:32, name:"Dig Deep",                   url:"32.html"},
+  {id:33, name:"Retro Bowl",                 url:"33-ff.html"},
+  {id:34, name:"Retro Bowl College",         url:"34-fixed.html"},
+  {id:36, name:"Monster Tracks",             url:"36-f.html"},
+  {id:37, name:"Gobble",                     url:"37-f.html"},
+  {id:38, name:"Five Nights at Freddy's",    url:"38-f.html"},
+  {id:39, name:"Five Nights at Freddy's 2",  url:"39-f.html"},
+  {id:40, name:"Five Nights at Freddy's 3",  url:"40-f.html"},
+  {id:41, name:"Five Nights at Freddy's 4",  url:"41-f.html"},
+  {id:42, name:"Road of Fury",               url:"42-f.html"},
+  {id:43, name:"Driven Wild",                url:"43-f.html"},
+  {id:44, name:"Ragdoll Hit",                url:"44-fix.html"},
+  {id:45, name:"Vex 1",                      url:"45-f.html"},
+  {id:46, name:"Vex 2",                      url:"46-f.html"},
+  {id:47, name:"Vex 3",                      url:"47-f.html"},
+  {id:48, name:"Vex 3 XMAS",                 url:"48-f.html"},
+  {id:49, name:"Vex 4",                      url:"49-f.html"},
+  {id:50, name:"Vex 5",                      url:"50-f.html"},
+  {id:51, name:"Vex 6",                      url:"51-f.html"}
+];
 
-            btnReload.addEventListener('click', function() {
-              if (currentUrl) navigate(currentUrl, true);
-            });
+var APPS = [
+  // ── POPULAR APPS & SOCIAL MEDIA ──
+  {n:'YouTube',            u:'https://piped.video',           d:'youtube.com',           e:'▶️',c:'#ff0000', eng:'cdn'},
+  {n:'TikTok',             u:'https://tok.habedieeh.re',      d:'tiktok.com',            e:'🎵',c:'#010101', eng:'cdn'},
+  {n:'Google',             u:'https://www.google.com',        d:'google.com',            e:'🔍',c:'#4285f4', eng:'cdn'},
+  {n:'Discord',            u:'https://discord.com/app',       d:'discord.com',           e:'💬',c:'#5865f2', eng:'cdn'},
+  {n:'Spotify',            u:'https://freefy.app',            d:'spotify.com',           e:'🎧',c:'#1db954', eng:'cdn'},
+  {n:'jsDelivr SVG Unblocker', u:'https://cdn.jsdelivr.net/gh/opiumbest/bull33/index.svg', d:'cdn.jsdelivr.net', e:'⚡', c:'#34d399', eng:'svg'},
+  {n:'Twitter / X',        u:'https://nitter.poast.org',      d:'x.com',                 e:'𝕏', c:'#111111', eng:'cdn'},
+  {n:'Reddit',             u:'https://redlib.privacyredirect.com', d:'reddit.com',       e:'🅡', c:'#ff4500', eng:'cdn'},
+  {n:'Twitch',             u:'https://www.twitch.tv',         d:'twitch.tv',             e:'🟣',c:'#9146ff', eng:'cdn'},
+  {n:'Instagram',          u:'https://www.instagram.com',     d:'instagram.com',         e:'📷',c:'#e1306c', eng:'cdn'},
+  {n:'Roblox',             u:'https://now.gg/apps/roblox-corporation/5349/roblox.html', d:'roblox.com', e:'🧱',c:'#e02424', eng:'cdn'},
+  {n:'Chess.com',          u:'https://www.chess.com',         d:'chess.com',             e:'♟️',c:'#769656', eng:'cdn'},
+  {n:'SoundCloud',         u:'https://soundcloud.com',        d:'soundcloud.com',        e:'☁️',c:'#ff5500', eng:'cdn'},
+  {n:'Pinterest',          u:'https://www.pinterest.com',     d:'pinterest.com',         e:'📌',c:'#e60023', eng:'cdn'},
+  {n:'GitHub',             u:'https://github.com',            d:'github.com',            e:'🐙',c:'#24292e', eng:'cdn'},
+  {n:'Coolmath Games',     u:'https://www.coolmathgames.com', d:'coolmathgames.com',     e:'➕',c:'#004488', eng:'cdn'},
+  {n:'Scratch',            u:'https://scratch.mit.edu',       d:'scratch.mit.edu',       e:'🐱',c:'#ff8c1a', eng:'cdn'},
+  {n:'Minecraft Classic',  u:'https://classic.minecraft.net', d:'classic.minecraft.net', e:'⛏️',c:'#5d7c15', eng:'cdn'},
+  {n:'Wikipedia',          u:'https://en.wikipedia.org',      d:'wikipedia.org',         e:'📖',c:'#24292e', eng:'cdn'},
 
-            document.querySelectorAll('.card').forEach(function(card) {
-              card.addEventListener('click', function() {
-                var url = this.getAttribute('data-url');
-                if (url) navigate(url);
-              });
-            });
+  // ── INTEGRATED HUBS ──
+  {n:'Movies (BruceHickey)',u:'https://in.brucehickey.com',   d:'in.brucehickey.com',    e:'🎬',c:'#c0392b', tab:'movies'},
+  {n:'Music (Freefy)',     u:'https://freefy.app',            d:'freefy.app',            e:'🎵',c:'#7c6ffc', tab:'music'},
+  {n:'800+ Games Library', u:'zones.json',                    d:'github.com',            e:'🎮',c:'#c084fc', tab:'games'}
+];
 
-            function panic() {
-              window.location.replace('https://classroom.google.com');
-            }
-            btnPanic.addEventListener('click', panic);
-            window.addEventListener('keydown', function(e) {
-              if (e.key === '`' || e.key === '~') panic();
-            });
+// ════════════════════════════════════════════════════
+// STATE & CONFIGURATION
+// ════════════════════════════════════════════════════
+var PROXY = '__SCRIPT_URL__';
+if (PROXY === '__SCRIPT_URL__') PROXY = '';
 
-            btnCloak.addEventListener('click', function() {
-              var win = window.open('about:blank', '_blank');
-              if (!win) {
-                showToast('Pop-up blocked! Allow popups to use cloaking.');
-                return;
-              }
-              var doc = win.document;
-              doc.title = document.title;
-              var fav = doc.createElement('link');
-              fav.rel = 'icon';
-              fav.href = document.getElementById('tab-favicon').href;
-              doc.head.appendChild(fav);
+var INIT_URL = '__INIT_URL__';
+if (INIT_URL === '__INIT_URL__') INIT_URL = '';
 
-              var iframe = doc.createElement('iframe');
-              iframe.style.position = 'fixed';
-              iframe.style.inset = '0';
-              iframe.style.width = '100vw';
-              iframe.style.height = '100vh';
-              iframe.style.border = 'none';
-              iframe.setAttribute('allow', 'fullscreen; autoplay; clipboard-write; encrypted-media; camera; microphone');
-              iframe.src = window.location.href;
+var DEFAULT_CLOAK = '__CLOAK_KEY__';
+if (DEFAULT_CLOAK === '__CLOAK_KEY__') DEFAULT_CLOAK = 'classroom';
 
-              doc.body.style.margin = '0';
-              doc.body.style.overflow = 'hidden';
-              doc.body.appendChild(iframe);
+var hist=[], hidx=-1, curUrl=null;
+var movLoaded=false, musLoaded=false;
+var curGame = null;
 
-              win.addEventListener('keydown', function(e) {
-                if (e.key === '`' || e.key === '~') {
-                  win.location.replace('https://classroom.google.com');
-                }
-              });
+// ════════════════════════════════════════════════════
+// INIT — Run immediately for 0ms latency
+// ════════════════════════════════════════════════════
+renderGames('');
+renderApps('');
+fetchGnGames();
 
-              showToast('🕶️ Opened in about:blank cloaked tab!');
-            });
+function onReady(url) {
+  if (url) PROXY = url;
+  if (INIT_URL) {
+    sw('browser');
+    setTimeout(function(){ navigate(INIT_URL); }, 80);
+  }
+  toast('✅ NexProxy ready','tok');
+}
 
-            var DISGUISES = {
-              classroom: { title: 'Classes', icon: 'https://ssl.gstatic.com/classroom/favicon.png' },
-              drive: { title: 'My Drive - Google Drive', icon: 'https://ssl.gstatic.com/docs/doclist/images/drive_2022q3_32dp.png' },
-              docs: { title: 'Google Docs', icon: 'https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico' },
-              canvas: { title: 'Dashboard', icon: 'https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico' },
-              khan: { title: 'Dashboard | Khan Academy', icon: 'https://www.khanacademy.org/favicon.ico' }
-            };
+// Immediate load if PROXY is injected from Apps Script template
+if (PROXY) {
+  onReady(PROXY);
+} else if (typeof google !== 'undefined' && google.script && google.script.run) {
+  google.script.run
+    .withSuccessHandler(onReady)
+    .withFailureHandler(function(e){
+      onReady('');
+    })
+    .getScriptUrl();
+} else {
+  onReady('');
+}
 
-            disguiseSelect.addEventListener('change', function() {
-              var d = DISGUISES[this.value];
-              if (d) {
-                document.title = d.title;
-                document.getElementById('tab-favicon').href = d.icon;
-                showToast('🎭 Disguised as ' + d.title);
-              }
-            });
+// ════════════════════════════════════════════════════
+// TAB SWITCHING
+// ════════════════════════════════════════════════════
+function sw(id) {
+  document.querySelectorAll('.nav').forEach(function(n){n.classList.toggle('on',n.dataset.p===id);});
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id===id);});
+  document.getElementById('topbar').style.display = id==='browser'?'flex':'none';
+  if (id==='movies' && !movLoaded) { movLoaded=true; loadMovies(); }
+  if (id==='music'  && !musLoaded) { musLoaded=true; loadMusic();  }
+}
+document.querySelectorAll('.nav[data-p],.chip[data-p]').forEach(function(el){
+  el.addEventListener('click',function(){ sw(el.dataset.p); });
+});
 
-          })();
-          //]]>
-        </script>
-      </body>
+// ════════════════════════════════════════════════════
+// MOVIES — BruceHickey (direct embed)
+// ════════════════════════════════════════════════════
+function loadMovies() {
+  var frame = document.getElementById('mframe');
+  var load  = document.getElementById('mload');
+  var target = 'https://in.brucehickey.com';
+  load.innerHTML = '<div class="ring"></div><div class="rlbl">Loading movies…</div>';
+  load.style.display = 'flex';
+  frame.onload = function(){ load.style.display='none'; toast('🎬 Movies loaded!','tok'); };
+  frame.onerror = function(){
+    load.style.display='flex';
+    load.innerHTML='<div style="color:#ef4444;font-size:13px;text-align:center">⚠️ Could not load.<br /><br />'
+      +'<button onclick="window.open(\'https://in.brucehickey.com\',\'_blank\')" style="padding:6px 14px;background:linear-gradient(135deg,#7c6ffc,#c084fc);border:none;border-radius:14px;color:#fff;font-size:11px;font-weight:600;cursor:pointer">Open in New Tab ↗</button></div>';
+  };
+  frame.src = target;
+  toast('🎬 Loading movies…','tinf');
+}
+
+// ════════════════════════════════════════════════════
+// MUSIC — Freefy
+// ════════════════════════════════════════════════════
+function loadMusic() {
+  var frame = document.getElementById('muframe');
+  var load  = document.getElementById('muload');
+  var target = 'https://freefy.app/';
+  load.innerHTML = '<div class="ring"></div><div class="rlbl">Loading Freefy…</div>';
+  load.style.display = 'flex';
+  frame.onload = function(){ load.style.display='none'; toast('🎵 Music loaded!','tok'); };
+  frame.onerror = function(){
+    load.style.display='flex';
+    load.innerHTML='<div style="color:#ef4444;font-size:13px;text-align:center">⚠️ Could not load.<br /><br />'
+      +'<button onclick="window.open(\'https://freefy.app/\',\'_blank\')" style="padding:6px 14px;background:linear-gradient(135deg,#7c6ffc,#c084fc);border:none;border-radius:14px;color:#fff;font-size:11px;font-weight:600;cursor:pointer">Open in New Tab ↗</button></div>';
+  };
+  frame.src = PROXY ? (PROXY + '?url=' + encodeURIComponent(target)) : target;
+  toast('🎵 Loading music…','tinf');
+}
+
+// ════════════════════════════════════════════════════
+// GAMES — Fetch all 837+ Games from GN-Math Library
+// ════════════════════════════════════════════════════
+function fetchGnGames() {
+  var countEl = document.getElementById('gcount');
+
+  var urls = [
+    'https://cdn.jsdelivr.net/gh/freebuisness/assets@main/zones.json',
+    'https://raw.githubusercontent.com/freebuisness/assets/main/zones.json',
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://cdn.jsdelivr.net/gh/freebuisness/assets@main/zones.json'),
+    'https://corsproxy.io/?' + encodeURIComponent('https://cdn.jsdelivr.net/gh/freebuisness/assets@main/zones.json')
+  ];
+
+  function tryFetch(idx) {
+    if (idx >= urls.length) {
+      if (countEl) countEl.textContent = ALL_GAMES.length + ' unblocked games';
+      return;
+    }
+    fetch(urls[idx])
+      .then(function(r){
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(data){
+        var rawList = Array.isArray(data) ? data : (data && data.zones ? data.zones : (data && Array.isArray(data.items) ? data.items : []));
+        if (rawList && rawList.length > 0) {
+          ALL_GAMES = rawList.filter(function(g){
+            return g && g.id !== undefined && g.id >= 0 && g.name && g.url;
+          }).map(function(g) {
+            // Resolve {COVER_URL} and {HTML_URL} placeholders from zones.json
+            var resolved = {};
+            for (var k in g) resolved[k] = g[k];
+            if (resolved.cover) resolved.cover = resolved.cover.replace('{COVER_URL}', COVER_BASE);
+            if (resolved.url)   resolved.url   = resolved.url.replace('{HTML_URL}', HTML_BASE);
+            return resolved;
+          });
+          if (countEl) countEl.textContent = ALL_GAMES.length + ' unblocked games';
+          renderGames(document.getElementById('gsearch').value || '');
+        }
+      })
+      .catch(function(){
+        tryFetch(idx + 1);
+      });
+  }
+
+  tryFetch(0);
+}
+
+function renderGames(q) {
+  var grid = document.getElementById('ggrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  var query = (q || '').trim().toLowerCase();
+  var list = ALL_GAMES.filter(function(g){
+    return !query || g.name.toLowerCase().indexOf(query) !== -1;
+  });
+
+  if (!list.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:rgba(255,255,255,.3);font-size:14px">No games found matching "' + esc(q) + '"</div>';
+    return;
+  }
+
+  list.forEach(function(g){
+    var card = document.createElement('div');
+    card.className = 'gc';
+
+    var thumb = document.createElement('div');
+    thumb.className = 'gct';
+
+    var img = document.createElement('img');
+    img.loading = 'lazy';
+    // Use resolved cover from zones.json, fall back to id-based path
+    img.src = g.cover || (COVER_BASE + '/' + g.id + '.png');
+    img.alt = g.name;
+    img.onerror = function(){
+      thumb.innerHTML = '<span style="font-size:32px">🎮</span><div class="gplay">▶</div>';
+    };
+
+    thumb.appendChild(img);
+    var play = document.createElement('div');
+    play.className = 'gplay';
+    play.textContent = '▶';
+    thumb.appendChild(play);
+
+    var info = document.createElement('div');
+    info.className = 'gci';
+    var name = document.createElement('div');
+    name.className = 'gcn';
+    name.textContent = g.name;
+    name.title = g.name;
+    info.appendChild(name);
+
+    card.appendChild(thumb);
+    card.appendChild(info);
+
+    card.addEventListener('click', function(){
+      openGame(g);
+    });
+
+    grid.appendChild(card);
+  });
+}
+
+document.getElementById('gsearch').addEventListener('input', function(){
+  renderGames(this.value);
+});
+
+// ════════════════════════════════════════════════════
+// GAME VIEWER — Pure Game (No website wrapper)
+// ════════════════════════════════════════════════════
+function openGame(g) {
+  if (!g) return;
+  curGame = g;
+  document.getElementById('gvtit').textContent = g.name || 'Game';
+
+  var gvload = document.getElementById('gvload');
+  gvload.innerHTML = '<div class="ring"></div><div class="rlbl">Launching ' + esc(g.name) + '…</div>';
+  gvload.style.display = 'flex';
+  document.getElementById('gv').style.display = 'flex';
+
+  var frame = document.getElementById('gvframe');
+  frame.src = 'about:blank';
+
+  // Direct external link
+  if (/^https?:\/\//i.test(g.url) && g.url.indexOf('{HTML_URL}') === -1) {
+    gvload.style.display = 'none';
+    frame.src = g.url;
+    toast('🎮 ' + g.name + ' launched!', 'tok');
+    return;
+  }
+
+  var rawUrl = g.url || (g.id + '.html');
+  // If the URL is already fully resolved (contains HTML_BASE or https://), use it directly
+  // Otherwise strip any remaining {HTML_URL} placeholder and build the full CDN path
+  var gameUrl;
+  if (/^https?:\/\//i.test(rawUrl) && rawUrl.indexOf('{HTML_URL}') === -1) {
+    gameUrl = rawUrl;
+  } else {
+    var suffix = String(rawUrl).replace('{HTML_URL}/', '').replace('{HTML_URL}', '').replace(/^\//, '');
+    if (!suffix.endsWith('.html')) suffix += '.html';
+    gameUrl = HTML_BASE + '/' + suffix;
+  }
+
+  // Extract the suffix for fallback candidates
+  var _suf = gameUrl.replace(HTML_BASE + '/', '').replace(/^.*\//, '');
+  var candidates = [
+    gameUrl,
+    'https://cdn.jsdelivr.net/gh/freebuisness/html@latest/' + _suf,
+    'https://raw.githubusercontent.com/freebuisness/html/main/' + _suf,
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(gameUrl),
+    'https://corsproxy.io/?' + encodeURIComponent(gameUrl)
+  ];
+
+  function tryFetchHtml(idx) {
+    if (idx >= candidates.length) {
+      if (PROXY) {
+        fetch(PROXY + '?url=' + encodeURIComponent(candidates[0]))
+          .then(function(r){ return r.text(); })
+          .then(function(html){ injectGameHtml(html); })
+          .catch(function(){ showGameError(candidates[0]); });
+      } else {
+        showGameError(candidates[0]);
+      }
+      return;
+    }
+
+    fetch(candidates[idx])
+      .then(function(r){
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      })
+      .then(function(html){
+        injectGameHtml(html);
+      })
+      .catch(function(){
+        tryFetchHtml(idx + 1);
+      });
+  }
+
+  function injectGameHtml(html) {
+    // Only inject a base tag if the HTML doesn't already have one
+    if (!/<base\s/i.test(html)) {
+      var baseTag = '<base href="' + HTML_BASE + '/">';
+      if (/<head(\s[^>]*)?>/i.test(html)) {
+        html = html.replace(/<head(\s[^>]*)?>/i, '$&\n' + baseTag);
+      } else {
+        html = baseTag + '\n' + html;
+      }
+    }
+
+    try {
+      var doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      doc.open();
+      doc.write(html);
+      doc.close();
+      gvload.style.display = 'none';
+      toast('🎮 ' + g.name + ' ready!', 'tok');
+    } catch(err) {
+      showGameError(candidates[0]);
+    }
+  }
+
+  function showGameError(url) {
+    gvload.innerHTML = '<div style="color:#ef4444;text-align:center;padding:20px">⚠️ Could not load game automatically.<br /><br />'
+      + '<button onclick="window.open(\'' + esc(url) + '\',\'_blank\')" style="padding:8px 18px;background:linear-gradient(135deg,#7c6ffc,#c084fc);border:none;border-radius:16px;color:#fff;font-size:12px;font-weight:600;cursor:pointer">Open in New Tab ↗</button></div>';
+  }
+
+  tryFetchHtml(0);
+}
+
+document.getElementById('gvclose').addEventListener('click', function(){
+  document.getElementById('gv').style.display = 'none';
+  document.getElementById('gvframe').src = 'about:blank';
+  document.getElementById('gvload').style.display = 'flex';
+  document.getElementById('gvload').innerHTML = '<div class="ring"></div><div class="rlbl">Loading game…</div>';
+});
+
+document.getElementById('gvfull').addEventListener('click', function(){
+  var f = document.getElementById('gvframe');
+  if (f.requestFullscreen) f.requestFullscreen();
+  else if (f.webkitRequestFullscreen) f.webkitRequestFullscreen();
+});
+
+document.getElementById('gvnewtab').addEventListener('click', function(){
+  if (!curGame) return;
+  var rawUrl = curGame.url || (curGame.id + '.html');
+  // Resolve any remaining {HTML_URL} placeholder
+  var targetUrl;
+  if (/^https?:\/\//i.test(rawUrl) && rawUrl.indexOf('{HTML_URL}') === -1) {
+    targetUrl = rawUrl;
+  } else {
+    var suffix = String(rawUrl).replace('{HTML_URL}/', '').replace('{HTML_URL}', '').replace(/^\//, '');
+    if (!suffix.endsWith('.html')) suffix += '.html';
+    targetUrl = HTML_BASE + '/' + suffix;
+  }
+
+  var w = window.open('about:blank', '_blank');
+  if (w) {
+    fetch(targetUrl).then(function(r){ return r.text(); }).then(function(html){
+      // Only inject base tag if the HTML doesn't already have one
+      if (!/<base\s/i.test(html)) {
+        var baseTag = '<base href="' + HTML_BASE + '/">';
+        html = html.replace(/<head(\s[^>]*)?>/i, '$&\n' + baseTag);
+      }
+      w.document.open();
+      w.document.write(html);
+      w.document.close();
+    }).catch(function(){
+      w.location.href = targetUrl;
+    });
+  }
+});
+
+// ════════════════════════════════════════════════════
+// APPS — Render
+// ════════════════════════════════════════════════════
+function renderApps(q) {
+  var grid=document.getElementById('agrid'); grid.innerHTML='';
+  var list=q?APPS.filter(function(a){return a.n.toLowerCase().indexOf(q.toLowerCase())!==-1;}):APPS;
+  list.forEach(function(app){
+    var tile=document.createElement('div'); tile.className='at';
+    var icon=document.createElement('div'); icon.className='ai';
+    icon.style.background='linear-gradient(135deg,'+app.c+',rgba(0,0,0,.7))';
+    var img=document.createElement('img');
+    img.src='https://www.google.com/s2/favicons?domain='+encodeURIComponent(app.d)+'&sz=64';
+    img.onerror=function(){ icon.innerHTML='<div class="fb">'+app.e+'</div>'; };
+    icon.appendChild(img);
+    var lbl=document.createElement('div'); lbl.className='al'; lbl.textContent=app.n;
+    tile.appendChild(icon); tile.appendChild(lbl);
+    tile.addEventListener('click',function(){
+      if (app.tab) {
+        sw(app.tab);
+      } else {
+        openInBrowser(app.u, app.eng);
+      }
+    });
+    grid.appendChild(tile);
+  });
+}
+
+document.getElementById('asearch').addEventListener('input',function(){ renderApps(this.value); });
+
+// ════════════════════════════════════════════════════
+// BROWSER (Multi-Engine Unblocker)
+// ════════════════════════════════════════════════════
+function openInBrowser(url, forcedEngine) {
+  sw('browser');
+  setTimeout(function(){ navigate(url, forcedEngine); }, 60);
+}
+
+function navigate(raw, forcedEngine) {
+  raw = (raw || '').trim();
+  if (!raw) return;
+  var url = raw;
+
+  var isUrl = /^https?:\/\//i.test(url) || (url.indexOf('.') !== -1 && url.indexOf(' ') === -1);
+  if (!/^https?:\/\//i.test(url)) {
+    if (isUrl) {
+      url = 'https://' + url;
+    } else {
+      url = 'https://duckduckgo.com/?q=' + encodeURIComponent(url);
+    }
+  }
+
+  curUrl = url;
+  hist = hist.slice(0, hidx + 1);
+  hist.push(url);
+  hidx = hist.length - 1;
+  updNav();
+  document.getElementById('urlinput').value = url;
+
+  // Hide browser welcome dashboard
+  var bwelcome = document.getElementById('bwelcome');
+  if (bwelcome) bwelcome.style.display = 'none';
+
+  // Smart video embed: only converts specific video watch links to clean embed player
+  if (/youtube\.com\/watch\?v=|youtu\.be\//i.test(url)) {
+    var vidMatch = url.match(/(?:v=|youtu\.be\/|\/embed\/)([a-zA-Z0-9_-]{11})/);
+    if (vidMatch && vidMatch[1]) {
+      url = 'https://www.youtube-nocookie.com/embed/' + vidMatch[1] + '?autoplay=1';
+    }
+  }
+
+  // Always use the selected engine (defaulting to 'cdn'), NEVER force 'direct'
+  var engine = forcedEngine || document.getElementById('engine-select').value || 'cdn';
+
+  var bl = document.getElementById('bload');
+  var bf = document.getElementById('bframe');
+  var berr = document.getElementById('berrbox');
+  bl.classList.add('show');
+  berr.classList.remove('show');
+
+  if (engine === 'direct') {
+    bl.innerHTML = '<div class="ring"></div><div class="rlbl">Loading direct…</div><div class="rurl">' + esc(url) + '</div>';
+    bf.onload = function() { bl.classList.remove('show'); toast('✅ Loaded', 'tok'); };
+    bf.onerror = function() {
+      bl.classList.remove('show');
+      showShieldFallback(url, 403);
+    };
+    bf.src = url;
+  } else if (engine === 'aboutblank') {
+    bl.classList.remove('show');
+    openInCloakedWindow(url);
+  } else if (engine === 'svg') {
+    // ── jsdelivr SVG embed: loads custom hosted SVG or fallback
+    var customSvg = localStorage.getItem('nxp_custom_jsdelivr_svg');
+    var svgProxy = customSvg || 'https://cdn.jsdelivr.net/gh/opiumbest/bull33/index.svg';
+    bl.innerHTML = '<div class="ring"></div><div class="rlbl">Loading via jsdelivr SVG…</div><div class="rurl">' + esc(svgProxy) + '</div>';
+    berr.classList.remove('show');
+    bf.onload = function() { bl.classList.remove('show'); toast('📄 Loaded via jsdelivr SVG', 'tok'); };
+    bf.onerror = function() { bl.classList.remove('show'); showShieldFallback(url, 0); };
+    bf.src = svgProxy;
+  } else if (engine === 'cdn') {
+    // ── Multi-proxy fallback chain — tries each endpoint until one works
+    var proxies = [
+      'https://api.allorigins.win/raw?url=',
+      'https://corsproxy.io/?',
+      'https://api.codetabs.com/v1/proxy?quest=',
+      'https://thingproxy.freeboard.io/fetch/'
+    ];
+    bl.innerHTML = '<div class="ring"></div><div class="rlbl">Connecting via proxy…</div><div class="rurl">' + esc(url) + '</div>';
+    berr.classList.remove('show');
+    bf.removeAttribute('src');
+    bf.srcdoc = '';
+
+    function tryProxy(idx) {
+      if (idx >= proxies.length) {
+        // All proxies failed — try direct as last resort
+        bl.innerHTML = '<div class="ring"></div><div class="rlbl">Trying direct connection…</div><div class="rurl">' + esc(url) + '</div>';
+        bf.onload = function() { bl.classList.remove('show'); toast('✅ Loaded direct', 'tok'); };
+        bf.onerror = function() { bl.classList.remove('show'); showShieldFallback(url, 0); };
+        bf.src = url;
+        return;
+      }
+      var target = proxies[idx] + encodeURIComponent(url);
+      fetch(target, {signal: AbortSignal.timeout ? AbortSignal.timeout(6000) : undefined})
+        .then(function(res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.text();
+        })
+        .then(function(html) {
+          bl.classList.remove('show');
+          // Inject base tag so relative URLs resolve
+          if (!/<base\s/i.test(html)) {
+            var baseHref = url.replace(/([^/])\/?$/, '$1/');
+            html = html.replace(/<head(\s[^>]*)?>/i, function(m){ return m + '<base href="' + baseHref + '">'; });
+          }
+          bf.srcdoc = html;
+          toast('⚡ Loaded via proxy #' + (idx+1), 'tok');
+        })
+        .catch(function() {
+          tryProxy(idx + 1);
+        });
+    }
+    tryProxy(0);
+  } else {
+    // Default: NexProxy Core (Apps Script direct streaming)
+    bl.innerHTML = '<div class="ring"></div><div class="rlbl">Streaming via NexProxy…</div><div class="rurl">' + esc(url) + '</div>';
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(function(res) {
+          bl.classList.remove('show');
+          if (res && res.success && res.html) {
+            injectBrowserHtml(res.html, url);
+          } else if (res && res.shield) {
+            showShieldFallback(url, res.code);
+          } else {
+            tryDirectFallback(url, res ? res.error : 'Fetch failed');
+          }
+        })
+        .withFailureHandler(function(err) {
+          bl.classList.remove('show');
+          tryDirectFallback(url, err ? (err.message || String(err)) : 'Server connection failed');
+        })
+        .proxyFetch(url);
+    } else {
+      tryDirectFallback(url, 'Running outside Apps Script');
+    }
+  }
+}
+
+function tryDirectFallback(url, reason) {
+  var bf = document.getElementById('bframe');
+  var bl = document.getElementById('bload');
+  bl.classList.add('show');
+  bl.innerHTML = '<div class="ring"></div><div class="rlbl">Connecting…</div><div class="rurl">' + esc(url) + '</div>';
+  bf.onload = function() { bl.classList.remove('show'); toast('✅ Loaded', 'tok'); };
+  bf.onerror = function() {
+    bl.classList.remove('show');
+    showShieldFallback(url, 403);
+  };
+  bf.src = url;
+}
+
+function openInCloakedWindow(url) {
+  var win = window.open('about:blank', '_blank');
+  if (!win) {
+    showPopupAlert();
+    return;
+  }
+  var p = CLOAK_PRESETS[curCloak] || CLOAK_PRESETS.classroom;
+  win.document.title = p.t;
+  var link = win.document.createElement('link');
+  link.rel = 'icon';
+  link.href = p.i;
+  win.document.head.appendChild(link);
+
+  // Build a full-page iframe using the multi-proxy approach
+  // Try allorigins first, then fall back to direct
+  var proxiedSrc;
+  if (url && /^https?:\/\//i.test(url)) {
+    proxiedSrc = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+  } else {
+    proxiedSrc = url;
+  }
+
+  var iframe = win.document.createElement('iframe');
+  iframe.style.position = 'fixed';
+  iframe.style.inset = '0';
+  iframe.style.width = '100vw';
+  iframe.style.height = '100vh';
+  iframe.style.border = 'none';
+  iframe.setAttribute('allow', 'autoplay *; fullscreen *; encrypted-media *; picture-in-picture *; clipboard-read *; clipboard-write *');
+  iframe.setAttribute('allowfullscreen', '');
+  iframe.src = proxiedSrc;
+
+  win.document.body.style.margin = '0';
+  win.document.body.style.overflow = 'hidden';
+  win.document.body.appendChild(iframe);
+
+  win.addEventListener('keydown', function(e) {
+    if (e.key === '`' || e.key === '~') {
+      win.location.replace('https://classroom.google.com');
+    }
+  });
+
+  toast('🕶️ Launched in cloaked tab!', 'tok');
+}
+
+function injectBrowserHtml(html, pageUrl) {
+  var bf = document.getElementById('bframe');
+  var origin = (pageUrl.match(/^(https?:\/\/[^\/]+)/i) || ["",""])[1];
+  var baseTag = '<base href="' + (origin || pageUrl) + '/">';
+  if (/<head(\s[^>]*)?>/i.test(html)) {
+    html = html.replace(/<head(\s[^>]*)?>/i, '$&\n' + baseTag);
+  } else {
+    html = baseTag + '\n' + html;
+  }
+  
+  try {
+    var doc = bf.contentDocument || (bf.contentWindow && bf.contentWindow.document);
+    doc.open();
+    doc.write(html);
+    doc.close();
+    toast('✅ Loaded via NexProxy Core', 'tok');
+  } catch(e) {
+    bf.srcdoc = html;
+    toast('✅ Loaded via NexProxy Core', 'tok');
+  }
+}
+
+function showShieldFallback(url, code) {
+  var bl = document.getElementById('bload');
+  bl.classList.remove('show');
+  var berr = document.getElementById('berrbox');
+  var bemsg = document.getElementById('bemsg');
+  berr.classList.add('show');
+  bemsg.innerHTML = '<div style="font-size:14px;color:#f59e0b;font-weight:700;margin-bottom:6px">🛡️ Site Security Restriction</div>'
+    + '<div style="font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.5;margin-bottom:14px">'
+    + esc(url) + ' blocked iframe embedding. Click below to launch in an <b>about:blank Cloaked Tab</b> (URL 100% hidden from school filters)!</div>'
+    + '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">'
+    + '<button onclick="openInCloakedWindow(\'' + esc(url) + '\')" style="padding:9px 20px;background:linear-gradient(135deg,#7c6ffc,#c084fc);border:none;border-radius:18px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(124,111,252,.35)">🕶️ Open in Cloaked Tab (Unblockable)</button>'
+    + '<button onclick="window.open(\'' + esc(url) + '\', \'_blank\')" style="padding:9px 20px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:18px;color:#fff;font-size:12px;font-weight:600;cursor:pointer">Open in New Tab ↗</button>'
+    + '</div>';
+}
+
+function handleLoadError(msg) {
+  var bl=document.getElementById('bload');
+  bl.classList.remove('show');
+  document.getElementById('berrbox').classList.add('show');
+  document.getElementById('bemsg').textContent = msg || 'Website refused connection or blocked datacenter requests.';
+}
+
+var btnBlank = document.getElementById('btn-rescue-blank');
+if (btnBlank) {
+  btnBlank.addEventListener('click', function(){
+    if (curUrl) openInCloakedWindow(curUrl);
+  });
+}
+
+var btnDirect = document.getElementById('btn-rescue-direct');
+if (btnDirect) {
+  btnDirect.addEventListener('click', function(){
+    if (curUrl) navigate(curUrl, 'direct');
+  });
+}
+
+function updNav(){
+  document.getElementById('backbtn').disabled=hidx<=0;
+  document.getElementById('fwdbtn').disabled=hidx>=hist.length-1;
+}
+
+document.getElementById('gobtn').addEventListener('click',function(){ navigate(document.getElementById('urlinput').value); });
+document.getElementById('urlinput').addEventListener('keydown',function(e){ if(e.key==='Enter') navigate(this.value); });
+document.getElementById('backbtn').addEventListener('click',function(){ if(hidx>0){hidx--;navigate(hist[hidx]);}});
+document.getElementById('fwdbtn').addEventListener('click',function(){ if(hidx<hist.length-1){hidx++;navigate(hist[hidx]);}});
+document.getElementById('relbtn').addEventListener('click',function(){ if(curUrl) navigate(curUrl); });
+document.getElementById('retrybtn').addEventListener('click',function(){ if(curUrl) navigate(curUrl); });
+
+var cdnBtn = document.getElementById('cdn-cfg-btn');
+if (cdnBtn) {
+  cdnBtn.addEventListener('click', function() {
+    var cur = localStorage.getItem('nxp_custom_jsdelivr_svg') || '';
+    var entered = prompt('⚡ Host Your Own jsDelivr Proxy:\n\nEnter your personal GitHub jsDelivr SVG URL (e.g. https://cdn.jsdelivr.net/gh/USERNAME/REPO@main/index.svg):\n\n(See "Host_Your_Own_jsDelivr_Proxy" folder on your Desktop for step-by-step instructions. Leave blank for default CORS Multi-Proxy)', cur);
+    if (entered !== null) {
+      entered = entered.trim();
+      if (entered) {
+        localStorage.setItem('nxp_custom_jsdelivr_svg', entered);
+        toast('✅ Custom jsDelivr Proxy set!', 'tok');
+        var eng = document.getElementById('engine-select');
+        if (eng) eng.value = 'svg';
+        sw('browser');
+        navigate(entered, 'svg');
+      } else {
+        localStorage.removeItem('nxp_custom_jsdelivr_svg');
+        toast('Switched to default Multi-CORS proxy', 'tok');
+      }
+    }
+  });
+}
+
+document.getElementById('hgo').addEventListener('click',function(){
+  var v=document.getElementById('hinput').value.trim();
+  if(v){sw('browser');setTimeout(function(){navigate(v);},60);}
+});
+document.getElementById('hinput').addEventListener('keydown',function(e){
+  if(e.key==='Enter'){var v=this.value.trim();if(v){sw('browser');setTimeout(function(){navigate(v);},60);}}
+});
+
+var hJsdBtn = document.getElementById('h-jsdelivr');
+if (hJsdBtn) {
+  hJsdBtn.addEventListener('click', function() {
+    var customSvg = localStorage.getItem('nxp_custom_jsdelivr_svg');
+    var eng = document.getElementById('engine-select');
+    if (customSvg) {
+      if (eng) eng.value = 'svg';
+      sw('browser');
+      setTimeout(function() { navigate(customSvg, 'svg'); }, 60);
+    } else {
+      // Prompt user or offer to configure
+      var ask = confirm('⚡ No personal jsDelivr link configured yet.\n\nWould you like to enter your own GitHub jsDelivr SVG link now?\n(Click Cancel to use the built-in Multi-CORS proxy)');
+      if (ask) {
+        if (cdnBtn) cdnBtn.click();
+      } else {
+        if (eng) eng.value = 'cdn';
+        sw('browser');
+        toast('🌐 Active: Built-in Multi-CORS Proxy', 'tok');
+      }
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════════════
+function toast(msg,cls){
+  var c=document.getElementById('toasts'),t=document.createElement('div');
+  t.className='toast '+(cls||'');t.textContent=msg;c.appendChild(t);
+  setTimeout(function(){
+    t.style.transition='opacity .22s';t.style.opacity='0';
+    setTimeout(function(){if(t.parentNode)t.parentNode.removeChild(t);},240);
+  },3500);
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+</script>
+</body>
+</html>
+
     </html>
   </foreignObject>
 </svg>
